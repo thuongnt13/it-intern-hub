@@ -1,0 +1,53 @@
+@model IEnumerable<ITInternHub.Models.Entities.Application>
+@{
+    ViewData["Title"] = "Sổ Theo Dõi Sinh Viên Thực Tập";
+}
+
+<div class="card border-0 shadow-sm rounded-4">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-bold"><i class="ri-contacts-book-2-line text-success me-1"></i> Danh sách sinh viên đã được
+            Doanh nghiệp tiếp nhận</h6>
+            <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill">Chính thức thực tập</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Mã SV</th>
+                            <th>Họ và Tên</th>
+                            <th>Lớp / Ngành</th>
+                            <th>Doanh nghiệp tiếp nhận</th>
+                            <th>Vị trí thực tập</th>
+                            <th>Thời điểm tiếp nhận</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var app in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold text-primary">@app.Student?.StudentCode</td>
+                                    <td>@app.Student?.User?.FullName</td>
+                                    <td>@app.Student?.ClassName - @app.Student?.Major</td>
+                                    <td class="fw-semibold">@app.JobPost?.Company?.CompanyName</td>
+                                    <td><span class="badge bg-light text-dark">@app.JobPost?.Title</span></td>
+                                    <td>@(app.UpdatedAt?.ToString("dd/MM/yyyy") ?? app.AppliedAt.ToString("dd/MM/yyyy"))</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="ri-user-unfollow-line display-4"></i>
+                                    <p class="mt-2 mb-0">Hiện chưa có sinh viên nào được ghi nhận trúng tuyển tiếp nhận.</p>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>

@@ -1,0 +1,102 @@
+@model ITInternHub.Models.Entities.StudentProfile
+@{
+    ViewData["Title"] = "Hồ sơ năng lực của tôi";
+    var allSkills = ViewBag.Skills as List<ITInternHub.Models.Entities.Skill>;
+    var mySkillIds = Model.StudentSkills.Select(ss => ss.SkillId).ToList();
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
+                    <div>
+                        <h4 class="fw-bold mb-1" style="color: var(--brand-navy);"><i
+                            class="ri-profile-line text-primary me-2"></i>Hồ sơ năng lực số (Portfolio)</h4>
+                            <small class="text-muted">Hoàn thiện kỹ năng để hệ thống tính toán và tự động sắp xếp việc làm
+                                khớp nhất</small>
+                            </div>
+                            <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-bold">Ứng viên Sinh
+                                viên</span>
+                            </div>
+
+                            <form asp-action="Profile" method="post">
+                                @Html.AntiForgeryToken()
+
+                                <!-- 1. THÔNG TIN CÁ NHÂN -->
+                                <h6 class="fw-bold text-uppercase text-primary small mb-3">1. Thông tin cá nhân & Học tập</h6>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-semibold">Họ và tên</label>
+                                        <input type="text" class="form-control bg-light" value="@Model.User.FullName" disabled />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-semibold">Email trường cấp</label>
+                                        <input type="text" class="form-control bg-light" value="@Model.User.Email" disabled />
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-4">
+                                        <label asp-for="StudentCode" class="form-label small fw-semibold">Mã số sinh viên (MSSV)
+                                            *</label>
+                                            <input asp-for="StudentCode" class="form-control" placeholder="VD: 22010001" required />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label asp-for="ClassName" class="form-label small fw-semibold">Lớp sinh hoạt *</label>
+                                            <input asp-for="ClassName" class="form-control" placeholder="VD: 63K1-CNTT" required />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label asp-for="Gpa" class="form-label small fw-semibold">Điểm GPA (Hệ 4.0) *</label>
+                                            <input asp-for="Gpa" type="number" step="0.01" min="0" max="4" class="form-control"
+                                                   placeholder="3.5" required />
+                                        </div>
+                                    </div>
+
+                                    <div class="row g-3 mb-4">
+                                        <div class="col-md-6">
+                                            <label asp-for="Major" class="form-label small fw-semibold">Chuyên ngành học *</label>
+                                            <input asp-for="Major" class="form-control" placeholder="Kỹ thuật phần mềm / KHMT..."
+                                                   required />
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label asp-for="GithubUrl" class="form-label small fw-semibold">Liên kết GitHub /
+                                                Portfolio</label>
+                                                <input asp-for="GithubUrl" class="form-control"
+                                                       placeholder="https://github.com/your-username" />
+                                            </div>
+                                        </div>
+
+                                        <!-- 2. TECH STACK (CHỌN THẺ KỸ NĂNG) -->
+                                        <h6 class="fw-bold text-uppercase text-primary small mb-2">2. Bộ thẻ kỹ năng bạn sở hữu (Tech Stack)
+                                        </h6>
+                                        <p class="text-muted small mb-3">Tích chọn các công nghệ bạn đã được học hoặc làm đồ án để hệ thống
+                                            đối sánh Match Score.</p>
+                    
+                                            <div class="card bg-light border p-3 rounded-3 mb-4" style="max-height: 250px; overflow-y: auto;">
+                                                <div class="row g-2">
+                                                    @if (allSkills != null)
+                                                    {
+                                                        foreach (var sk in allSkills)
+                                                        {
+                                                            <div class="col-md-4 col-lg-3">
+                                                                <div class="form-check p-2 bg-white rounded border">
+                                                                    <input class="form-check-input ms-1 me-2" type="checkbox" name="selectedSkills"
+                                                                           value="@sk.Id" id="sk_@sk.Id" @(mySkillIds.Contains(sk.Id) ? "checked" : "") />
+                                                                    <label class="form-check-label small fw-semibold" for="sk_@sk.Id">@sk.Name</label>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+
+                                            <button type="submit" class="btn btn-primary px-4 py-2 fw-bold rounded-3 shadow-sm"
+                                                    style="background-color: var(--brand-navy);">
+                                                <i class="ri-save-line me-1"></i> Lưu thông tin hồ sơ
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>

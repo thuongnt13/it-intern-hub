@@ -1,0 +1,166 @@
+@model IEnumerable<ITInternHub.Models.Entities.Record>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Bảng Điểm & Đánh Giá Thực Tập của Doanh Nghiệp";
+    var terms = ViewBag.Terms as List<ITInternHub.Models.Entities.Term>;
+    int? currentTermId = ViewBag.CurrentTermId;
+    string? currentClass = ViewBag.CurrentClassName;
+}
+
+<!-- THANH LỌC HỌC KỲ VÀ LỚP -->
+<div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
+    <div class="card-body p-3">
+        <form method="get" asp-action="Gradebook" class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <select name="termId" class="form-select" onchange="this.form.submit()">
+                    <option value="">-- Tất cả Đợt thực tập --</option>
+                    @if (terms != null)
+                    {
+                        foreach (var t in terms)
+                        {
+                            <option value="@t.Id" selected="@(currentTermId == t.Id)">@t.Name (@t.AcademicYear)</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <input type="text" name="className" value="@currentClass" class="form-control"
+                       placeholder="Lọc theo Lớp (VD: 63K1-CNTT...)" />
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-outline-primary px-3"><i class="ri-filter-3-line"></i> Lọc</button>
+                <button type="button" class="btn btn-primary w-100 fw-semibold" onclick="window.print()">
+                    <i class="ri-printer-line me-1"></i> In / Xuất Bảng Điểm
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- BẢNG ĐIỂM CHI TIẾT -->
+<div class="card border-0 shadow-sm rounded-4 bg-white">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-bold"><i class="ri-file-chart-line text-info me-1"></i> Kết quả Đánh giá từ Doanh nghiệp đối
+            tác (@Model.Count() sinh viên)</h6>
+            <span class="badge bg-info-subtle text-info px-3 py-2 rounded-pill">Khoa CNTT Giám sát</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Mã SV</th>
+                            <th>Họ và Tên</th>
+                            <th>Lớp sinh hoạt</th>
+                            <th>Doanh nghiệp tiếp nhận</th>
+                            <th class="text-center">Chuyên môn (50%)</th>
+                            <th class="text-center">Kỷ luật (30%)</th>
+                            <th class="text-center">Kỹ năng (20%)</th>
+                            <th class="text-center">Điểm Tổng kết</th>
+                            <th>Đề xuất tuyển dụng</th>
+                            <th class="pe-4">Chi tiết nhận xét</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var r in Model)
+                            {
+                                var eval = r.Evaluations.OrderByDescending(e => e.EvaluationRound).FirstOrDefault();
+
+                                <tr>
+                                    <td class="ps-4 fw-bold text-primary">@r.Student.StudentCode</td>
+                                    <td class="fw-semibold">@r.Student.User.FullName</td>
+                                    <td><span class="badge bg-light text-dark border">@r.Student.ClassName</span></td>
+                                    <td>@r.Company.CompanyName</td>
+
+                                    @if (eval != null)
+                                    {
+                                        <td class="text-center fw-bold">@eval.TechnicalScore</td>
+                                        <td class="text-center fw-bold">@eval.DisciplineScore</td>
+                                        <td class="text-center fw-bold">@eval.SoftSkillScore</td>
+                                        <td class="text-center">
+                                            <span class="badge bg-success fs-6 px-3 py-1">
+                                                @eval.FinalScore / 10
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @if (eval.HiringRecommendation)
+                                            {
+                                                <span class="badge bg-success-subtle text-success"><i class="ri-check-line"></i> Đề xuất
+                                                    nhận chính thức</span>
+                                                }
+                                        else
+                                                {
+                                                    <span class="text-muted small">Không</span>
+                                                }
+                                            </td>
+                                            <td class="pe-4 small">
+                                                <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-3"
+                                                        onclick="showCommentModal('@r.Student.User.FullName', '@Html.Raw(eval.Comments.Replace("'", "\\'"))', '@Html.Raw((eval.ImprovementPoints ?? "Không có").Replace("'", "\\'"))', '@eval.EvaluatedBy')">
+                                                    <i class="ri-eye-line"></i> Xem nhận xét
+                                                </button>
+                                            </td>
+                                        }
+                                else
+                                        {
+                                            <td colspan="6" class="text-center text-muted small pe-4">
+                                                <span class="badge bg-warning-subtle text-warning"><i class="ri-time-line"></i> Doanh nghiệp
+                                                    chưa gửi đánh giá</span>
+                                                </td>
+                                            }
+                                        </tr>
+                                    }
+                                }
+                    else
+                                {
+                                    <tr>
+                                        <td colspan="10" class="text-center py-5 text-muted">Chưa có dữ liệu sinh viên thực tập cho đợt
+                                            này.</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODAL XEM CHI TIẾT NHẬN XÉT -->
+                <div class="modal fade" id="commentModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h6 class="modal-title fw-bold text-primary">Nhận xét thực tập: <span id="modalStudentName"></span></h6>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-success">Đánh giá ưu điểm & Tinh thần làm việc:</label>
+                                    <p class="p-3 bg-light rounded border small text-dark" id="modalComments"></p>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold text-warning">Điểm cần cải thiện thêm:</label>
+                                    <p class="p-3 bg-light rounded border small text-dark" id="modalImprovement"></p>
+                                </div>
+                                <div class="small text-muted">
+                                    Người đánh giá phía Doanh nghiệp: <strong class="text-dark" id="modalEvaluator"></strong>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @section Scripts {
+                    <script>
+                        function showCommentModal(name, comments, improvement, evaluator) {
+                            document.getElementById('modalStudentName').innerText = name;
+                            document.getElementById('modalComments').innerText = comments;
+                            document.getElementById('modalImprovement').innerText = improvement;
+                            document.getElementById('modalEvaluator').innerText = evaluator;
+                            new bootstrap.Modal(document.getElementById('commentModal')).show();
+                        }
+                    </script>
+                }

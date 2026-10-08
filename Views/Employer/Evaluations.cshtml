@@ -1,0 +1,209 @@
+@model IEnumerable<ITInternHub.Models.Entities.Record>
+@{
+    ViewData["Title"] = "Đánh giá Thực tập sinh";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-1" style="color: var(--brand-navy);"><i
+                class="ri-survey-line text-danger me-2"></i>Đánh giá Kết quả Thực tập sinh</h4>
+                <small class="text-muted">Nhận xét và gửi phiếu điểm chính thức về Ban Hợp tác Doanh nghiệp / Khoa
+                    CNTT</small>
+                </div>
+                <a href="/Employer/Applications" class="btn btn-outline-secondary btn-sm"><i class="ri-arrow-left-line"></i>
+                    Phễu ứng viên</a>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 bg-white">
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">Thực tập sinh</th>
+                                        <th>Vị trí & Đợt thực tập</th>
+                                        <th>Thời gian bắt đầu</th>
+                                        <th>Người hướng dẫn</th>
+                                        <th class="text-center">Kết quả đánh giá</th>
+                                        <th class="text-end pe-4">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model != null && Model.Any())
+                                    {
+                                        foreach (var r in Model)
+                                        {
+                                            var lastEval = r.Evaluations.OrderByDescending(e => e.EvaluationRound).FirstOrDefault();
+
+                                            <tr>
+                                                <td class="ps-4">
+                                                    <h6 class="mb-0 fw-bold">@r.Student.User.FullName</h6>
+                                                    <small class="text-muted">MSSV: @r.Student.StudentCode - @r.Student.ClassName</small>
+                                                </td>
+                                                <td>
+                                                    <div class="fw-semibold small">@r.JobTitle</div>
+                                                    <small class="text-muted">@(r.InternshipTerm?.Name ?? "Đợt thực tập chính khóa")</small>
+                                                </td>
+                                                <td>@r.StartDate.ToString("dd/MM/yyyy")</td>
+                                                <td>@r.SupervisorName</td>
+                                                <td class="text-center">
+                                                    @if (lastEval != null)
+                                                    {
+                                                        <span class="badge bg-success-subtle text-success fs-6 fw-bold">
+                                                            @lastEval.FinalScore / 10
+                                                        </span>
+                                                        <br /><small class="text-muted">@(lastEval.EvaluationRound == 2 ? "Cuối kỳ" : "Giữa kỳ")</small>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-warning-subtle text-warning">Chưa đánh giá</span>
+                                                    }
+                                                </td>
+                                                <td class="text-end pe-4">
+                                                    <button class="btn btn-sm btn-primary rounded-pill px-3"
+                                                            onclick="openEvalModal(@r.Id, '@r.Student.User.FullName')"
+                                                            style="background-color: var(--brand-blue);">
+                                                        <i class="ri-edit-box-line me-1"></i> Chấm điểm & Nhận xét
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="6" class="text-center py-5 text-muted">
+                                                <p class="mb-0">Doanh nghiệp chưa có sinh viên nào được tiếp nhận chính thức vào sổ thực
+                                                    tập.</p>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODAL CHẤM ĐIỂM THỰC TẬP -->
+                <div class="modal fade text-start" id="evalModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h6 class="modal-title fw-bold text-primary"><i class="ri-survey-line me-1"></i> Phiếu đánh giá thực
+                                    tập: <span id="evalStudentName"></span></h6>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" id="evalRecordId" />
+                
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-semibold">Đợt đánh giá *</label>
+                                        <select id="evalRound" class="form-select">
+                                            <option value="1">Đánh giá Giữa kỳ</option>
+                                            <option value="2" selected>Đánh giá Cuối kỳ (Tính điểm kết thúc)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label small fw-semibold">Điểm Chuyên môn kỹ thuật (50%) *</label>
+                                            <input type="number" id="technicalScore" class="form-control" step="0.1" min="0" max="10"
+                                                   placeholder="Thang điểm 10" required />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small fw-semibold">Điểm Kỷ luật chuyên cần (30%) *</label>
+                                            <input type="number" id="disciplineScore" class="form-control" step="0.1" min="0" max="10"
+                                                   placeholder="Thang điểm 10" required />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small fw-semibold">Điểm Kỹ năng mềm / Giao tiếp (20%) *</label>
+                                            <input type="number" id="softSkillScore" class="form-control" step="0.1" min="0" max="10"
+                                                   placeholder="Thang điểm 10" required />
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-semibold">Nhận xét chi tiết về tinh thần & hiệu quả công việc
+                                            *</label>
+                                            <textarea id="evalComments" class="form-control" rows="3"
+                                                      placeholder="Sinh viên tiếp thu nhanh, hoàn thành tốt các task sprint, chủ động trong công việc..."
+                                                      required></textarea>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-semibold">Điểm cần cải thiện thêm</label>
+                                            <textarea id="improvementPoints" class="form-control" rows="2"
+                                                      placeholder="Cần rèn luyện thêm kỹ năng viết tài liệu kỹ thuật..."></textarea>
+                                        </div>
+
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="checkbox" id="hiringRecommendation" value="true" />
+                                            <label class="form-check-label small fw-bold text-success" for="hiringRecommendation">
+                                                <i class="ri-user-star-line me-1"></i> Doanh nghiệp ĐỀ XUẤT TIẾP NHẬN LÀM NHÂN VIÊN CHÍNH THỨC
+                                                sau tốt nghiệp
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+                                        <button type="button" class="btn btn-primary btn-sm px-4" onclick="submitEvaluation()">Gửi phiếu đánh
+                                            giá về Nhà trường</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @section Scripts {
+                                <script>
+                                    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                                    function openEvalModal(recordId, studentName) {
+                                        document.getElementById('evalRecordId').value = recordId;
+                                        document.getElementById('evalStudentName').innerText = studentName;
+                                        new bootstrap.Modal(document.getElementById('evalModal')).show();
+                                    }
+
+                                    function submitEvaluation() {
+                                        const recordId = document.getElementById('evalRecordId').value;
+                                        const round = document.getElementById('evalRound').value;
+                                        const tech = document.getElementById('technicalScore').value;
+                                        const disc = document.getElementById('disciplineScore').value;
+                                        const soft = document.getElementById('softSkillScore').value;
+                                        const comments = document.getElementById('evalComments').value.trim();
+                                        const improve = document.getElementById('improvementPoints').value.trim();
+                                        const hire = document.getElementById('hiringRecommendation').checked;
+
+                                        if (!tech || !disc || !soft || !comments) {
+                                            alert('Vui lòng nhập đủ các cột điểm và nội dung nhận xét!');
+                                            return;
+                                        }
+
+                                        const formData = new FormData();
+                                        formData.append('recordId', recordId);
+                                        formData.append('round', round);
+                                        formData.append('technicalScore', tech);
+                                        formData.append('disciplineScore', disc);
+                                        formData.append('softSkillScore', soft);
+                                        formData.append('comments', comments);
+                                        formData.append('improvementPoints', improve);
+                                        formData.append('hiringRecommendation', hire);
+                                        formData.append('__RequestVerificationToken', token);
+
+                                        fetch('/Employer/Evaluations/Submit', { method: 'POST', body: formData })
+                                            .then(res => res.json())
+                                            .then(data => {
+                                                if (data.success) {
+                                                    alert(data.message);
+                                                    location.reload();
+                                                } else {
+                                                    alert('Lỗi: ' + data.message);
+                                                }
+                                            })
+                                            .catch(err => alert('Lỗi kết nối: ' + err));
+                                    }
+                                </script>
+                            }

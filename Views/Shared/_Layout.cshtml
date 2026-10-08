@@ -1,0 +1,594 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - IT-InternHub PORTAL</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    
+    <!-- RemixIcon (Bộ Icon chuẩn của Velzon & TopCV) -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+
+    <style>
+            :root {
+                --brand-navy: #103057;
+                /* Xanh dương đậm chủ đạo */
+                --brand-blue: #0066cc;
+                /* Xanh nước biển TopCV */
+                --brand-blue-hover: #004c99;
+                --brand-light-blue: #e8f2ff;
+                /* Xanh nhạt thương hiệu */
+                --brand-bg: #f8fafc;
+                --text-dark: #1e293b;
+                --text-secondary: #64748b;
+                --border-color: #e2e8f0;
+            }
+
+            body {
+                font-family: 'Inter', system-ui, -apple-system, sans-serif;
+                background-color: var(--brand-bg);
+                color: var(--text-dark);
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* NAVBAR HEADER */
+            .topcv-header {
+                background: #ffffff;
+                border-bottom: 1px solid var(--border-color);
+                position: sticky;
+                top: 0;
+                z-index: 1030;
+                box-shadow: 0 2px 10px rgba(16, 48, 87, 0.04);
+            }
+
+            .navbar-brand-logo {
+                font-size: 1.35rem;
+                font-weight: 800;
+                color: var(--brand-navy);
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                letter-spacing: -0.5px;
+            }
+
+            .navbar-brand-logo .brand-highlight {
+                color: var(--brand-blue);
+            }
+
+            .badge-portal {
+                background-color: var(--brand-light-blue);
+                color: var(--brand-blue);
+                font-size: 0.65rem;
+                padding: 3px 7px;
+                border-radius: 4px;
+                font-weight: 800;
+                letter-spacing: 0.5px;
+            }
+
+            /* Nav links */
+            .topcv-nav .nav-link {
+                font-weight: 600;
+                font-size: 0.92rem;
+                color: var(--text-dark);
+                padding: 0.75rem 0.9rem !important;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+
+            .topcv-nav .nav-link:hover,
+            .topcv-nav .nav-link.active {
+                color: var(--brand-blue);
+            }
+
+            /* Buttons */
+            .btn-auth-login {
+                color: var(--brand-navy);
+                font-weight: 600;
+                font-size: 0.88rem;
+                padding: 7px 16px;
+                border-radius: 8px;
+                text-decoration: none;
+                transition: all 0.2s;
+            }
+
+            .btn-auth-login:hover {
+                color: var(--brand-blue);
+                background-color: var(--brand-light-blue);
+            }
+
+            .btn-auth-register {
+                background-color: var(--brand-light-blue);
+                color: var(--brand-blue);
+                font-weight: 600;
+                font-size: 0.88rem;
+                padding: 7px 18px;
+                border-radius: 8px;
+                border: 1px solid #cce0ff;
+                text-decoration: none;
+                transition: all 0.2s;
+            }
+
+            .btn-auth-register:hover {
+                background-color: var(--brand-blue);
+                color: #ffffff;
+            }
+
+            .btn-employer-post {
+                background-color: var(--brand-navy);
+                color: #ffffff;
+                font-weight: 600;
+                font-size: 0.88rem;
+                padding: 8px 16px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                text-decoration: none;
+                transition: all 0.2s;
+                box-shadow: 0 4px 10px rgba(16, 48, 87, 0.15);
+            }
+
+            .btn-employer-post:hover {
+                background-color: #0c2340;
+                color: #ffffff;
+                transform: translateY(-1px);
+            }
+
+            /* Role Badges */
+            .badge-role {
+                font-size: 0.72rem;
+                padding: 2px 8px;
+                border-radius: 6px;
+                font-weight: 600;
+            }
+
+            /* FOOTER */
+            .topcv-footer {
+                background-color: #ffffff;
+                border-top: 1px solid var(--border-color);
+                margin-top: auto;
+                padding-top: 3.5rem;
+                padding-bottom: 2rem;
+            }
+
+            .footer-heading {
+                font-size: 0.92rem;
+                font-weight: 700;
+                color: var(--brand-navy);
+                margin-bottom: 1.25rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .footer-links {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .footer-links li {
+                margin-bottom: 0.65rem;
+            }
+
+            .footer-links a {
+                color: var(--text-secondary);
+                text-decoration: none;
+                font-size: 0.88rem;
+                transition: all 0.2s;
+                display: inline-flex;
+                align-items: center;
+                gap: 4px;
+            }
+
+            .footer-links a:hover {
+                color: var(--brand-blue);
+                transform: translateX(3px);
+            }
+
+            .footer-subheading {
+                font-size: 0.8rem;
+                text-transform: uppercase;
+                font-weight: 700;
+                color: var(--brand-blue);
+                margin-top: 1rem;
+                margin-bottom: 0.5rem;
+                display: block;
+            }
+
+            .footer-bottom {
+                border-top: 1px solid #f1f5f9;
+                padding-top: 1.5rem;
+                margin-top: 2.5rem;
+                font-size: 0.85rem;
+                color: var(--text-secondary);
+            }
+
+            :root {
+                --brand-blue: #0284c7;
+                /* Xanh nước biển đậm */
+                --brand-light-blue: #e0f2fe;
+                /* Xanh nhạt TopCV style */
+                --brand-accent: #0369a1;
+            }
+
+            .brand-text {
+                font-size: 1.25rem;
+                color: #0f172a;
+                letter-spacing: -0.5px;
+            }
+
+            .brand-highlight {
+                color: var(--brand-blue);
+            }
+
+            .badge-portal {
+                font-size: 0.65rem;
+                font-weight: 700;
+                letter-spacing: 1.5px;
+                color: var(--brand-blue);
+                background-color: var(--brand-light-blue);
+                padding: 2px 6px;
+                border-radius: 4px;
+                width: fit-content;
+                margin-top: 2px;
+            }
+    </style>
+</head>
+
+<body>
+
+    <!-- TOP ANNOUNCEMENT BANNER -->
+    <div class="py-1 px-3 text-center text-white small"
+         style="background-color: var(--brand-navy); font-size: 0.82rem;">
+        <span>
+            <i class="ri-fire-fill text-warning me-1"></i>
+            <strong>IT-Intern Hub</strong> Hơn 500+ vị trí thực tập sinh CNTT đã được kiểm duyệt & sẵn sàng
+            tiếp nhận!
+        </span>
+    </div>
+
+    <!-- MAIN NAVBAR -->
+    <header class="topcv-header">
+        <nav class="navbar navbar-expand-lg py-2">
+            <div class="container">
+                <!-- 1. LOGO & BRAND -->
+                <!-- LOGO & BRAND -->
+                <a class="navbar-brand-logo d-flex align-items-center gap-2 text-decoration-none" asp-controller="Home"
+                   asp-action="Index">
+                    <!-- Thay thẻ <i> bằng ảnh logo -->
+                    <img src="~/lib/img/logo.png" alt="IT-InternHub Logo"
+                         style="height: 45px; width: auto; object-fit: contain;" asp-append-version="true" />
+
+                    <div class="d-flex flex-column lh-1">
+                        <span class="brand-text fw-bold">IT-Intern<span class="brand-highlight">Hub</span></span>
+                        <span class="badge-portal">PORTAL</span>
+                    </div>
+                </a>
+
+                <!-- MOBILE TOGGLER -->
+                <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarMain">
+                    <i class="ri-menu-line fs-3"></i>
+                </button>
+
+                <!-- 2. MENU PUBLIC (Cho tất cả người dùng & Khách xem tự do) -->
+                <div class="collapse navbar-collapse ms-lg-4" id="navbarMain">
+                    <ul class="navbar-nav topcv-nav me-auto mb-2 mb-lg-0">
+                        <!-- Việc làm thực tập -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                @* <i class="ri-briefcase-line text-primary"></i>  *@
+                                Việc làm thực tập
+                            </a>
+                            <ul class="dropdown-menu border-0 shadow-sm rounded-3 mt-1 py-2">
+                                <li class="dropdown-header small text-uppercase fw-bold text-muted">Lọc theo Tech Stack
+                                </li>
+                                <li><a class="dropdown-item py-2" href="/?skill=React">
+                                    @* <i
+                                    class="ri-reactjs-line text-info me-2"></i> *@
+                                    Frontend (React / Vue /
+                                    Angular)</a></li>
+                                    <li><a class="dropdown-item py-2" href="/?skill=Java">
+                                        @* <i
+                                        class="ri-cup-line text-danger me-2"></i> *@
+                                        Backend Java (Spring Boot)</a></li>
+                                        <li><a class="dropdown-item py-2" href="/?skill=.NET">
+                                            @* <i
+                                            class="ri-microsoft-line text-primary me-2"></i> *@
+                                            Backend C# / .NET Core</a>
+                                        </li>
+                                        <li><a class="dropdown-item py-2" href="/?skill=Python">
+                                            @* <i
+                                            class="ri-code-s-slash-line text-warning me-2"></i> *@
+                                            Python / AI / Data</a>
+                                        </li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                        <li><a class="dropdown-item py-2 fw-semibold text-primary" href="/"><i
+                                            class="ri-search-eye-line me-2"></i>Xem tất cả việc làm</a></li>
+                                        </ul>
+                                    </li>
+
+                                    <!-- Doanh nghiệp IT -->
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#">
+                                            @* <i class="ri-building-line text-secondary"></i> *@
+                                            Doanh nghiệp
+                                            IT</a>
+                                        </li>
+
+                                        <!-- Lộ trình kỹ năng (Tags catalog) -->
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#">
+                                                @* <i class="ri-node-tree text-warning"></i>  *@
+                                                Lộ trình kỹ năng</a>
+                                            </li>
+
+                                            <!-- Thông tin Đợt thực tập (Từ Nhà trường) -->
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="#">
+                                                    @* <i class="ri-calendar-check-line text-success"></i> *@
+                                                    Thông tin
+                                                    Đợt thực tập</a>
+                                                </li>
+                                            </ul>
+
+                                            <!-- 3. KHU VỰC ĐIỀU HƯỚNG THEO ACTOR (GÓC PHẢI) -->
+                                            <!-- 3. KHU VỰC ĐIỀU HƯỚNG THEO ACTOR (GÓC PHẢI) -->
+                                            <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                                                @* TRƯỜNG HỢP: KHÁCH / CHƯA ĐĂNG NHẬP *@
+                                                @if (User.Identity == null || !User.Identity.IsAuthenticated)
+                                                {
+                                                    <a href="/Account/Login" class="btn-auth-login">Đăng nhập</a>
+                                                    <a href="/Account/Register" class="btn-auth-register">Đăng ký</a>
+                                                    <a href="/Account/Login?returnUrl=/employer/jobs/create" class="btn-employer-post ms-lg-2">
+                                                        <i class="ri-file-add-line"></i>
+                                                        Đăng tin tuyển dụng
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    @* NÚT ĐĂNG TIN THỰC TẬP - CHỈ HIỂN THỊ KHI ĐÃ ĐĂNG NHẬP VỚI ROLE_EMPLOYER *@
+                                                    @if (User.IsInRole("ROLE_EMPLOYER"))
+                                                    {
+                                                        <a href="/employer/jobs/create" class="btn-employer-post me-2">
+                                                            <i class="ri-add-circle-line"></i>
+                                                            Đăng tin tuyển dụng
+                                                        </a>
+                                                    }
+
+                                                    @* DROPDOWN TÀI KHOẢN NGƯỜI DÙNG *@
+                                                    <div class="dropdown">
+                                                        <button
+                                                            class="btn btn-light border d-flex align-items-center gap-2 rounded-pill px-3 py-1 dropdown-toggle"
+                                                            data-bs-toggle="dropdown">
+                                                            <img src="https://ui-avatars.com/api/?name=@(User.Identity.Name ?? "User")&background=103057&color=ffffff"
+                                                                 class="rounded-circle" width="28" height="28" alt="Avatar" />
+                                                            <span class="small fw-bold text-dark">@(User.Identity.Name ?? "Tài khoản")</span>
+                                                        </button>
+
+                                                        <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-3 mt-2 p-2"
+                                                            style="min-width: 270px;">
+
+                                                            @* 1. ACTOR: SINH VIÊN (ROLE_STUDENT) *@
+                                                            @if (User.IsInRole("ROLE_STUDENT"))
+                                                            {
+                                                                <li class="dropdown-header d-flex justify-content-between align-items-center pb-1">
+                                                                    <span class="fw-bold text-dark"> ỨNG
+                                                                        VIÊN</span>
+                                                                        <span class="badge bg-primary-subtle text-primary badge-role">Sinh viên</span>
+                                                                    </li>
+                                                                    <li><a class="dropdown-item py-2" href="/student/profile">Hồ sơ năng lực & CV</a></li>
+                                                                    <li><a class="dropdown-item py-2" href="/student/applications">Đơn ứng tuyển của tôi</a>
+                                                                    </li>
+                                                                    <li><a class="dropdown-item py-2" href="/student/WeeklyLogs">Nhật ký thực tập tuần</a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <hr class="dropdown-divider">
+                                                                    </li>
+                                                                }
+
+                                                                @* 2. ACTOR: DOANH NGHIỆP (ROLE_EMPLOYER) *@
+                                                                @if (User.IsInRole("ROLE_EMPLOYER"))
+                                                                {
+                                                                    <li class="dropdown-header d-flex justify-content-between align-items-center pb-1">
+                                                                        <span class="fw-bold text-dark">DOANH
+                                                                            NGHIỆP</span>
+                                                                            <span class="badge bg-success-subtle text-success badge-role">HR Portal</span>
+                                                                        </li>
+                                                                        <li><a class="dropdown-item py-2" href="/Employer/Jobs/Create">Đăng tin thực tập mới</a>
+                                                                        </li>
+                                                                        <li><a class="dropdown-item py-2" href="/Employer/Jobs">Quản lý bài đăng tuyển</a>
+                                                                        </li>
+                                                                        <li><a class="dropdown-item py-2" href="/Employer/Applications">Sàng lọc CV (%
+                                                                            Match)</a>
+                                                                        </li>
+                                                                        <li><a class="dropdown-item py-2" href="/Employer/Interviews">Lịch hẹn phỏng vấn</a>
+                                                                        </li>
+                                                                        <li><a class="dropdown-item py-2" href="/Employer/Evaluations">Đánh giá thực tập
+                                                                            sinh</a></li>
+                                                                            <li>
+                                                                                <hr class="dropdown-divider">
+                                                                            </li>
+                                                                        }
+
+                                                                        @* 3. ACTOR: NHÀ TRƯỜNG / BAN HỢP TÁC (ROLE_UNIVERSITY) *@
+                                                                        @if (User.IsInRole("ROLE_UNIVERSITY"))
+                                                                        {
+                                                                            <li class="dropdown-header d-flex justify-content-between align-items-center pb-1">
+                                                                                <span class="fw-bold text-dark">NHÀ
+                                                                                    TRƯỜNG</span>
+                                                                                    <span class="badge bg-warning-subtle text-warning badge-role">Giám sát</span>
+                                                                                </li>
+                                                                                <!-- GẮN LINK TRỰC TIẾP VỀ 3 HÀM CỦA ADMIN -->
+                                                                                <li><a class="dropdown-item py-2" href="/Admin/InternshipTracking">Sổ theo dõi thực tập
+                                                                                    sinh</a></li>
+                                                                                    <li><a class="dropdown-item py-2" href="/Admin/InternshipTracking/CompanyStats">Thống kê
+                                                                                        DN đối tác tiếp
+                                                                                        nhận</a></li>
+                                                                                        <li><a class="dropdown-item py-2" href="/Admin/InternshipTracking/Gradebook">Bảng điểm &
+                                                                                            Đánh giá của
+                                                                                            DN</a></li>
+                                                                                            <li>
+                                                                                                <hr class="dropdown-divider">
+                                                                                            </li>
+                                                                                        }
+
+                                                                                        @* 4. ACTOR: QUẢN TRỊ VIÊN NỀN TẢNG (ROLE_ADMIN) *@
+                                                                                        @if (User.IsInRole("ROLE_ADMIN"))
+                                                                                        {
+                                                                                            <li class="dropdown-header d-flex justify-content-between align-items-center pb-1">
+                                                                                                <span class="fw-bold text-dark"><i class="ri-shield-keyhole-line me-1"></i> ADMIN
+                                                                                                    TOÀN QUYỀN</span>
+                                                                                                    <span class="badge bg-danger text-white badge-role">Hệ thống</span>
+                                                                                                </li>
+                                                                                                <li><a class="dropdown-item py-2 fw-semibold" href="/Admin/JobApproval">Duyệt tin tuyển
+                                                                                                    dụng</a></li>
+                                                                                                    <li><a class="dropdown-item py-2" href="/Admin/SkillManagement">Quản trị Bộ Tag Kỹ
+                                                                                                        năng</a></li>
+                                                                                                        <li><a class="dropdown-item py-2" href="/Admin/Dashboard">Dashboard Velzon Admin</a>
+                                                                                                        </li>
+                                                                                                        <li>
+                                                                                                            <hr class="dropdown-divider">
+                                                                                                        </li>
+                                                                                                    }
+
+                                                                                                    <!-- TÙY CHỌN CHUNG -->
+                                                                                                    <li>
+                                                                                                        <a class="dropdown-item py-2 text-danger" href="/Account/Logout">
+                                                                                                            <i class="ri-logout-box-r-line me-2"></i>Đăng xuất
+                                                                                                        </a>
+                                                                                                    </li>
+                                                                                                </ul>
+                                                                                            </div>
+                                                                                        }
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        </nav>
+                                                                    </header>
+
+                                                                    <!-- CONTENT BODY (RenderBody) -->
+                                                                    <main role="main">
+                                                                        @if (TempData["SuccessMessage"] != null)
+                                                                        {
+                                                                            <div class="container mt-3">
+                                                                                <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm" role="alert">
+                                                                                    <i class="ri-checkbox-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                                                                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                                                                </div>
+                                                                            </div>
+                                                                        }
+
+                                                                        @RenderBody()
+                                                                    </main>
+
+                                                                    <!-- 4. FOOTER: PHÂN TÁCH RÕ RÀNG 4 CỘT NGUỒN LỰC THEO ĐÚNG BÀI TOÁN -->
+                                                                    <footer class="topcv-footer">
+                                                                        <div class="container">
+                                                                            <div class="row g-4">
+                
+                                                                                <!-- CỘT 1: THÔNG TIN NỀN TẢNG IT-INTERNHUB -->
+                                                                                <div class="col-lg-4 col-md-6">
+                                                                                    <div class="navbar-brand-logo mb-3">
+                                                                                        <img src="~/lib/img/logo.png" alt="IT-InternHub Logo"
+                                                                                             style="height: 35px; width: auto; object-fit: contain;" asp-append-version="true" />
+                                                                                        <span>IT-Intern<span class="brand-highlight">Hub</span></span>
+                                                                                    </div>
+                                                                                    <p class="text-secondary small pe-lg-4 mb-3">
+                                                                                        Nền tảng công nghệ kết nối chuẩn hóa hồ sơ sinh viên CNTT, tính toán độ khớp kỹ năng (% Match
+                                                                                        Score), quản lý phễu ứng tuyển và liên thông dữ liệu đánh giá thực tập về Nhà trường.
+                                                                                    </p>
+                                                                                    <div class="small text-secondary mb-1"><i class="ri-map-pin-line text-primary me-1"></i> Trung tâm
+                                                                                        Hợp tác Doanh nghiệp & Đào tạo CNTT</div>
+                                                                                        <div class="small text-secondary mb-1"><i class="ri-mail-line text-primary me-1"></i>
+                                                                                            banhopTac@itinternhub.edu.vn</div>
+                                                                                            <div class="small text-secondary"><i class="ri-phone-line text-primary me-1"></i> Hotline: (024)
+                                                                                                7300 8888</div>
+                                                                                            </div>
+
+                                                                                            <!-- CỘT 2: DÀNH CHO SINH VIÊN / ỨNG VIÊN -->
+                                                                                            <div class="col-lg-2 col-md-6 col-6">
+                                                                                                <h6 class="footer-heading">Dành cho Sinh viên</h6>
+                                                                                                <ul class="footer-links">
+                                                                                                    <li><a href="/"><i class="ri-arrow-right-s-line"></i>Tìm việc thực tập</a></li>
+                                                                                                    <li><a href="#"><i class="ri-arrow-right-s-line"></i>Tạo Hồ sơ năng lực số</a></li>
+                                                                                                    <li><a href="#"><i class="ri-arrow-right-s-line"></i>Liên kết GitHub/Portfolio</a></li>
+                                                                                                    <li><a href="#"><i class="ri-arrow-right-s-line"></i>Theo dõi phễu ứng tuyển</a></li>
+                                                                                                    <li><a href="#"><i class="ri-arrow-right-s-line"></i>Gửi nhật ký thực tập tuần</a></li>
+                                                                                                </ul>
+                                                                                            </div>
+
+                                                                                            <!-- CỘT 3: DÀNH CHO DOANH NGHIỆP / NHÀ TUYỂN DỤNG -->
+                                                                                            <div class="col-lg-3 col-md-6 col-6">
+                                                                                                <h6 class="footer-heading">Dành cho Doanh nghiệp</h6>
+                                                                                                <ul class="footer-links">
+                                                                                                    <li><a href="#"><i class="ri-arrow-right-s-line"></i>Đăng tin tuyển dụng (Gắn Tag)</a></li>
+                                                                                                    <li><a href="#"><i class="ri-arrow-right-s-line"></i>Lọc CV theo Match Score & GPA</a></li>
+                                                                                                    <li><a href="#"><i class="ri-arrow-right-s-line"></i>Quản lý trạng thái phỏng vấn</a></li>
+                                                                                                    <li><a href="#"><i class="ri-arrow-right-s-line"></i>Lập phiếu đánh giá thực tập sinh</a></li>
+                                                                                                    <li><a href="#"><i class="ri-arrow-right-s-line"></i>Hợp tác tiếp nhận sinh viên</a></li>
+                                                                                                </ul>
+                                                                                            </div>
+
+                                                                                            <!-- CỘT 4: CỔNG CÁN BỘ NHÀ TRƯỜNG & QUẢN TRỊ HỆ THỐNG -->
+                                                                                            <div class="col-lg-3 col-md-6">
+                                                                                                <h6 class="footer-heading">Cổng Cán bộ & Quản trị</h6>
+                    
+                                                                                                <!-- Dành cho Nhà trường (Chỉ giám sát đào tạo) -->
+                                                                                                <span class="footer-subheading"><i class="ri-graduation-cap-line me-1"></i> Ban Hợp tác Doanh
+                                                                                                    nghiệp:</span>
+                                                                                                    <ul class="footer-links mb-3">
+                                                                                                        <li><a href="#"><i class="ri-arrow-right-s-line"></i>Sổ theo dõi thực tập sinh</a></li>
+                                                                                                        <li><a href="#"><i class="ri-arrow-right-s-line"></i>Thống kê tỷ lệ tiếp nhận SV</a></li>
+                                                                                                        <li><a href="#"><i class="ri-arrow-right-s-line"></i>Xuất bảng điểm thực tập</a></li>
+                                                                                                    </ul>
+
+                                                                                                    <!-- Dành cho Quản trị viên Admin (Duyệt tin & Quản trị Master Data) -->
+                                                                                                    <span class="footer-subheading text-danger"><i class="ri-shield-keyhole-line me-1"></i> Quản trị
+                                                                                                        viên (Admin):</span>
+                                                                                                        <ul class="footer-links">
+                                                                                                            <li><a href="/Admin/JobApproval" class="fw-semibold text-danger"><i
+                                                                                                                class="ri-checkbox-circle-line me-1"></i>Phê duyệt bài đăng tuyển dụng</a></li>
+                                                                                                                <li><a href="/Admin/SkillManagement" class="fw-semibold text-primary"><i
+                                                                                                                    class="ri-price-tag-3-line me-1"></i>Quản lý Bộ Tag Kỹ năng chuẩn</a></li>
+                                                                                                                </ul>
+                                                                                                            </div>
+
+                                                                                                        </div>
+
+                                                                                                        <!-- FOOTER BOTTOM -->
+                                                                                                        <div class="footer-bottom d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+                                                                                                            <div>
+                                                                                                                &copy; 2026 <strong>IT-Intern Hub</strong>
+                                                                                                            </div>
+                                                                                                            <div class="d-flex gap-3">
+                                                                                                                <a href="#" class="text-decoration-none text-secondary">Quy chế thực tập</a>
+                                                                                                                <a href="#" class="text-decoration-none text-secondary">Bảo mật thông tin</a>
+                                                                                                                <a href="#" class="text-decoration-none text-secondary">Hỗ trợ kỹ thuật</a>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </footer>
+
+                                                                                                <!-- Bootstrap 5.3 JS Bundle -->
+                                                                                                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+                                                                                                <script src="~/js/site.js" asp-append-version="true"></script>
+                                                                                                @await RenderSectionAsync("Scripts", required: false)
+                                                                                            </body>
+
+                                                                                        </html>

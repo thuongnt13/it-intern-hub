@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ITInternHub Portal</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet" />
+
+    <style>
+            :root {
+                --admin-sidebar: #0f172a;
+                /* Xanh than đậm */
+                --admin-primary: #0284c7;
+                /* Xanh nước biển */
+                --admin-bg: #f8fafc;
+            }
+
+            body {
+                background-color: var(--admin-bg);
+                font-family: 'Inter', system-ui, sans-serif;
+            }
+
+            .sidebar {
+                width: 260px;
+                height: 100vh;
+                position: fixed;
+                top: 0;
+                left: 0;
+                background-color: var(--admin-sidebar);
+                color: #94a3b8;
+                display: flex;
+                flex-direction: column;
+                z-index: 1000;
+            }
+
+            .sidebar-brand {
+                padding: 1.5rem;
+                font-size: 1.25rem;
+                font-weight: 800;
+                color: #fff;
+                text-decoration: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+            .sidebar-menu {
+                list-style: none;
+                padding: 1rem 0;
+                margin: 0;
+                flex-grow: 1;
+                overflow-y: auto;
+            }
+
+            .sidebar-heading {
+                font-size: 0.72rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: #64748b;
+                padding: 0.75rem 1.5rem 0.25rem 1.5rem;
+                font-weight: 700;
+            }
+
+            .sidebar-item a {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 1.5rem;
+                color: #94a3b8;
+                text-decoration: none;
+                font-weight: 500;
+                font-size: 0.92rem;
+                transition: all 0.2s;
+            }
+
+            .sidebar-item a:hover {
+                color: #fff;
+                background-color: rgba(2, 132, 199, 0.15);
+                border-left: 4px solid var(--admin-primary);
+            }
+
+            .main-wrapper {
+                margin-left: 260px;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .top-header {
+                height: 65px;
+                background: #fff;
+                border-bottom: 1px solid #e2e8f0;
+                padding: 0 2rem;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .content-body {
+                padding: 2rem;
+                flex-grow: 1;
+            }
+
+            .stat-card {
+                background: #fff;
+                border-radius: 12px;
+                padding: 1.5rem;
+                border: 1px solid #e2e8f0;
+            }
+    </style>
+</head>
+
+<body>
+    <!-- SIDEBAR QUẢN TRỊ -->
+    <aside class="sidebar">
+        <a href="/Admin/Dashboard" class="sidebar-brand" style="flex-wrap: wrap !important;">
+            <i class="ri-shield-check-fill text-info"></i>
+            <span>ITInternHub</span>
+            @if (User.IsInRole("ROLE_ADMIN"))
+            {
+                <span class="text-danger small"
+                      style="width: 100% !important; margin-left: 2rem !important; margin-top: -4px !important; font-size: 0.75rem !important;">Admin</span>
+            }
+            else
+            {
+                <span class="text-info small"
+                      style="width: 100% !important; margin-left: 2rem !important; margin-top: -4px !important; font-size: 0.75rem !important;">Khoa/Trường</span>
+            }
+        </a>
+
+        <ul class="sidebar-menu">
+            <!-- 1. MỤC CHUNG: DASHBOARD (CẢ 2 CÙNG XEM ĐƯỢC) -->
+            <li class="sidebar-heading">Tổng quan</li>
+            <li class="sidebar-item">
+                <a href="/Admin/Dashboard">Dashboard</a>
+            </li>
+
+            <!-- 2. PHÂN HỆ QUẢN TRỊ CỦA ADMIN (CHỈ ROLE_ADMIN MỚI NHÌN THẤY) -->
+            @if (User.IsInRole("ROLE_ADMIN"))
+            {
+                <li class="sidebar-heading text-danger">Quản trị Nền tảng (Admin)</li>
+                <li class="sidebar-item">
+                    <a href="/Admin/JobApproval">
+                        Phê duyệt tin đăng
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/Admin/SkillManagement">
+                        Quản trị Kỹ năng (Tags)
+                    </a>
+                </li>
+            }
+
+            <!-- 3. PHÂN HỆ DÀNH CHO NHÀ TRƯỜNG & BAN HỢP TÁC DOANH NGHIỆP -->
+            <!-- Cả Nhà trường và Admin đều có quyền xem phân hệ giám sát thực tập này -->
+            @if (User.IsInRole("ROLE_UNIVERSITY") || User.IsInRole("ROLE_ADMIN"))
+            {
+                <li class="sidebar-heading text-primary">Giám sát Đào tạo (Nhà trường)</li>
+                <li class="sidebar-item">
+                    <a href="/Admin/InternshipTracking">
+                        Sổ theo dõi thực tập sinh
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/Admin/InternshipTracking/CompanyStats">
+                        Doanh nghiệp tiếp nhận
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/Admin/InternshipTracking/Gradebook">
+                        Bảng điểm & Đánh giá DN
+                    </a>
+                </li>
+            }
+
+            <li class="sidebar-heading">Hệ thống</li>
+            <li class="sidebar-item">
+                <a href="/"> Ra trang chủ sinh viên</a>
+            </li>
+        </ul>
+
+        <!-- THÔNG TIN TÀI KHOẢN GÓC DƯỚI SIDEBAR -->
+        <div class="p-3 border-top border-secondary small">
+            <span class="d-block" style="color: #ffffff !important;">Đang đăng nhập với vai trò:</span>
+            @if (User.IsInRole("ROLE_ADMIN"))
+            {
+                <span class="badge bg-danger text-white mt-1">Quản trị viên (Admin)</span>
+            }
+            else if (User.IsInRole("ROLE_UNIVERSITY"))
+            {
+                <span class="badge bg-info text-dark mt-1">Cán bộ Nhà trường</span>
+            }
+        </div>
+    </aside>
+
+    <!-- KHU VỰC NỘI DUNG CHÍNH -->
+    <div class="main-wrapper">
+        <header class="top-header">
+            <h5 class="mb-0 fw-bold">@ViewData["Title"]</h5>
+            <div class="d-flex align-items-center gap-3">
+                <span class="text-secondary small">Xin chào, <strong>@User.Identity?.Name</strong></span>
+                <a href="/Account/Logout" class="btn btn-outline-danger btn-sm">
+                    <i class="ri-logout-box-r-line"></i> Đăng xuất
+                </a>
+            </div>
+        </header>
+
+        <div class="content-body">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm mb-4">
+                    <i class="ri-checkbox-circle-fill me-1"></i> @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+            @RenderBody()
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

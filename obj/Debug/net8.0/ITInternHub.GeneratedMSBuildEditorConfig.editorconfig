@@ -1,0 +1,139 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = true
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = ITInternHub
+build_property.RootNamespace = ITInternHub
+build_property.ProjectDir = D:\CH33\Các phương pháp phân tích và thiết kế phần mềm tiên tiến\ITInternHub\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = D:\CH33\Các phương pháp phân tích và thiết kế phần mềm tiên tiến\ITInternHub
+build_property._RazorSourceGeneratorDebug = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Areas/Admin/Views/Dashboard/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcRGFzaGJvYXJkXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Areas/Admin/Views/InternshipTracking/CompanyStats.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcSW50ZXJuc2hpcFRyYWNraW5nXENvbXBhbnlTdGF0cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Areas/Admin/Views/InternshipTracking/Gradebook.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcSW50ZXJuc2hpcFRyYWNraW5nXEdyYWRlYm9vay5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Areas/Admin/Views/InternshipTracking/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcSW50ZXJuc2hpcFRyYWNraW5nXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Areas/Admin/Views/JobApproval/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcSm9iQXBwcm92YWxcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Areas/Admin/Views/Shared/InternshipTracking/CompanyStats.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcU2hhcmVkXEludGVybnNoaXBUcmFja2luZ1xDb21wYW55U3RhdHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Areas/Admin/Views/Shared/InternshipTracking/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcU2hhcmVkXEludGVybnNoaXBUcmFja2luZ1xJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Areas/Admin/Views/Shared/_AdminLayout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcU2hhcmVkXF9BZG1pbkxheW91dC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Areas/Admin/Views/SkillManagement/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcU2tpbGxNYW5hZ2VtZW50XEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Areas/Admin/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXNcQWRtaW5cVmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/Account/AccessDenied.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxBY2Nlc3NEZW5pZWQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/Account/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/Account/Register.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/EmployerJobs/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZXJKb2JzXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/EmployerJobs/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZXJKb2JzXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/EmployerJobs/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZXJKb2JzXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/Employer/Applications.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZXJcQXBwbGljYXRpb25zLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/Employer/Evaluations.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZXJcRXZhbHVhdGlvbnMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/Employer/Interviews.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRW1wbG95ZXJcSW50ZXJ2aWV3cy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/Home/JobDetail.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxKb2JEZXRhaWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/Student/Applications.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxBcHBsaWNhdGlvbnMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/Student/Profile.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxQcm9maWxlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/Student/WeeklyLogs.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxXZWVrbHlMb2dzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/CH33/Các phương pháp phân tích và thiết kế phần mềm tiên tiến/ITInternHub/Views/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = b-nz7g41uhdn

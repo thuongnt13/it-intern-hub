@@ -1,0 +1,328 @@
+@model IEnumerable<ITInternHub.Models.Entities.Skill>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Quản lý Danh mục Kỹ năng (Skill Tags)";
+    var industries = ViewBag.Industries as List<ITInternHub.Models.Entities.Industry>;
+    int? currentIndId = ViewBag.CurrentIndustryId;
+    string? currentKeyword = ViewBag.CurrentKeyword;
+}
+
+@Html.AntiForgeryToken()
+
+<!-- TÌM KIẾM & BỘ LỌC -->
+<div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-body p-3">
+        <form method="get" asp-action="Index" class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0"><i
+                        class="ri-search-line text-muted"></i></span>
+                        <input type="text" name="keyword" value="@currentKeyword" class="form-control border-start-0"
+                               placeholder="Tìm kiếm theo tên kỹ năng (React, Java, Docker...)" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <select name="industryId" class="form-select" onchange="this.form.submit()">
+                        <option value="">-- Tất cả Lĩnh vực --</option>
+                        @if (industries != null)
+                        {
+                            foreach (var ind in industries)
+                            {
+                                <option value="@ind.Id" selected="@(currentIndId == ind.Id)">@ind.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-outline-primary px-3"><i class="ri-filter-3-line"></i> Lọc</button>
+                    <button type="button" class="btn btn-primary w-100 fw-semibold" data-bs-toggle="modal"
+                            data-bs-target="#createSkillModal">
+                        <i class="ri-add-circle-line me-1"></i> Thêm Thẻ Mới
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- BẢNG DANH MỤC KỸ NĂNG -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold"><i class="ri-price-tag-3-line text-primary me-1"></i> Danh sách Thẻ kỹ năng công nghệ
+                (@Model.Count() thẻ)</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="skillsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Tên Tag Kỹ năng</th>
+                                <th>Lĩnh vực trực thuộc</th>
+                                <th>Phân loại nhóm</th>
+                                <th class="text-center">Đánh dấu HOT</th>
+                                <th class="text-end pe-4">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                foreach (var skill in Model)
+                                {
+                                    <tr id="row-skill-@skill.Id">
+                                        <td class="ps-4">
+                                            <span class="fw-bold text-dark fs-6" id="name-skill-@skill.Id">@skill.Name</span>
+                                        </td>
+                                        <td id="ind-skill-@skill.Id"><span
+                                            class="badge bg-light text-dark border">@skill.Industry?.Name</span></td>
+                                            <td id="cat-skill-@skill.Id"><span class="text-secondary small">@(skill.Category ?? "Chưa phân loại")</span></td>
+                                            <td class="text-center">
+                                                <button type="button" class="btn btn-sm border-0 p-0" onclick="toggleHot(@skill.Id)"
+                                                        id="btn-hot-@skill.Id">
+                                                    @if (skill.IsHot)
+                                                    {
+                                                        <span class="badge bg-danger px-2 py-1"><i class="ri-fire-fill"></i> HOT</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-light text-muted border px-2 py-1">Thường</span>
+                                                    }
+                                                </button>
+                                            </td>
+                                            <td class="text-end pe-4">
+                                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3 me-1"
+                                                        onclick="openEditModal(@skill.Id, '@Html.Raw(skill.Name.Replace("'", "\\'"))', @skill.IndustryId, '@Html.Raw(skill.Category ?? "")', @(skill.IsHot ? "true" : "false"))">
+                                                    <i class="ri-edit-line"></i> Sửa
+                                                </button>
+                                                <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3"
+                                                        onclick="deleteSkill(@skill.Id, '@Html.Raw(skill.Name.Replace("'", "\\'"))')">
+                                                    <i class="ri-delete-bin-line"></i> Xóa
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                    else
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center py-5 text-muted">Không tìm thấy thẻ kỹ năng nào.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL THÊM KỸ NĂNG -->
+            <div class="modal fade" id="createSkillModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h6 class="modal-title fw-bold text-primary"><i class="ri-add-circle-line me-1"></i> Thêm Thẻ Kỹ Năng
+                                Mới</h6>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Lĩnh vực chuyên môn *</label>
+                                    <select id="createSkillIndustryId" class="form-select">
+                                        @if (industries != null)
+                                        {
+                                            foreach (var ind in industries)
+                                            {
+                                                <option value="@ind.Id">@ind.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Tên thẻ kỹ năng (Tag) *</label>
+                                    <input type="text" id="createSkillName" class="form-control"
+                                           placeholder="VD: React, Docker, Golang..." />
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold">Nhóm chuyên môn:</label>
+                                    <input type="text" id="createSkillCategory" class="form-control"
+                                           placeholder="Frontend, Backend, Cloud..." />
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="createSkillIsHot" />
+                                    <label class="form-check-label small fw-semibold" for="createSkillIsHot">Đánh dấu là Kỹ năng
+                                        HOT</label>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+                                    <button type="button" class="btn btn-primary btn-sm px-3" onclick="submitCreateSkill()">Lưu thẻ kỹ
+                                        năng</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MODAL CHỈNH SỬA KỸ NĂNG -->
+                        <div class="modal fade" id="editSkillModal" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h6 class="modal-title fw-bold text-primary"><i class="ri-edit-line me-1"></i> Chỉnh Sửa Thẻ Kỹ Năng
+                                        </h6>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" id="editSkillId" />
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-semibold">Lĩnh vực chuyên môn *</label>
+                                            <select id="editSkillIndustryId" class="form-select">
+                                                @if (industries != null)
+                                                {
+                                                    foreach (var ind in industries)
+                                                    {
+                                                        <option value="@ind.Id">@ind.Name</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-semibold">Tên thẻ kỹ năng (Tag) *</label>
+                                            <input type="text" id="editSkillName" class="form-control" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-semibold">Nhóm chuyên môn:</label>
+                                            <input type="text" id="editSkillCategory" class="form-control" />
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="editSkillIsHot" />
+                                            <label class="form-check-label small fw-semibold" for="editSkillIsHot">Đánh dấu là Kỹ năng
+                                                HOT</label>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+                                            <button type="button" class="btn btn-primary btn-sm px-3" onclick="submitEditSkill()">Cập nhật thay
+                                                đổi</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                @section Scripts {
+                                    <script>
+                                        const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                                        // 1. AJAX THÊM MỚI
+                                        function submitCreateSkill() {
+                                            const name = document.getElementById('createSkillName').value.trim();
+                                            const industryId = document.getElementById('createSkillIndustryId').value;
+                                            const category = document.getElementById('createSkillCategory').value.trim();
+                                            const isHot = document.getElementById('createSkillIsHot').checked;
+
+                                            if (!name) { alert('Vui lòng nhập tên kỹ năng!'); return; }
+
+                                            const formData = new FormData();
+                                            formData.append('Name', name);
+                                            formData.append('IndustryId', industryId);
+                                            formData.append('Category', category);
+                                            formData.append('IsHot', isHot);
+                                            formData.append('__RequestVerificationToken', token);
+
+                                            fetch('/Admin/SkillManagement/Create', { method: 'POST', body: formData })
+                                                .then(res => res.json())
+                                                .then(data => {
+                                                    if (data.success) {
+                                                        alert(data.message);
+                                                        location.reload();
+                                                    } else {
+                                                        alert('Lỗi: ' + data.message);
+                                                    }
+                                                })
+                                                .catch(err => alert('Lỗi kết nối: ' + err));
+                                        }
+
+                                        // 2. AJAX CHỈNH SỬA
+                                        function openEditModal(id, name, industryId, category, isHot) {
+                                            document.getElementById('editSkillId').value = id;
+                                            document.getElementById('editSkillName').value = name;
+                                            document.getElementById('editSkillIndustryId').value = industryId;
+                                            document.getElementById('editSkillCategory').value = category;
+                                            document.getElementById('editSkillIsHot').checked = isHot;
+
+                                            new bootstrap.Modal(document.getElementById('editSkillModal')).show();
+                                        }
+
+                                        function submitEditSkill() {
+                                            const id = document.getElementById('editSkillId').value;
+                                            const name = document.getElementById('editSkillName').value.trim();
+                                            const industryId = document.getElementById('editSkillIndustryId').value;
+                                            const category = document.getElementById('editSkillCategory').value.trim();
+                                            const isHot = document.getElementById('editSkillIsHot').checked;
+
+                                            if (!name) { alert('Tên kỹ năng không được để trống!'); return; }
+
+                                            const formData = new FormData();
+                                            formData.append('Id', id);
+                                            formData.append('Name', name);
+                                            formData.append('IndustryId', industryId);
+                                            formData.append('Category', category);
+                                            formData.append('IsHot', isHot);
+                                            formData.append('__RequestVerificationToken', token);
+
+                                            fetch('/Admin/SkillManagement/Edit', { method: 'POST', body: formData })
+                                                .then(res => res.json())
+                                                .then(data => {
+                                                    if (data.success) {
+                                                        alert(data.message);
+                                                        location.reload();
+                                                    } else {
+                                                        alert('Lỗi: ' + data.message);
+                                                    }
+                                                })
+                                                .catch(err => alert('Lỗi kết nối: ' + err));
+                                        }
+
+                                        // 3. AJAX ĐỔI TRẠNG THÁI HOT NHANH
+                                        function toggleHot(id) {
+                                            const formData = new FormData();
+                                            formData.append('id', id);
+                                            formData.append('__RequestVerificationToken', token);
+
+                                            fetch('/Admin/SkillManagement/ToggleHot', { method: 'POST', body: formData })
+                                                .then(res => res.json())
+                                                .then(data => {
+                                                    if (data.success) {
+                                                        const btn = document.getElementById(`btn-hot-${id}`);
+                                                        if (btn.innerHTML.includes('bg-danger')) {
+                                                            btn.innerHTML = '<span class="badge bg-light text-muted border px-2 py-1">Thường</span>';
+                                                        } else {
+                                                            btn.innerHTML = '<span class="badge bg-danger px-2 py-1"><i class="ri-fire-fill"></i> HOT</span>';
+                                                        }
+                                                    } else {
+                                                        alert('Lỗi: ' + data.message);
+                                                    }
+                                                })
+                                                .catch(err => alert('Lỗi kết nối: ' + err));
+                                        }
+
+                                        // 4. AJAX XÓA AN TOÀN
+                                        function deleteSkill(id, name) {
+                                            if (!confirm(`Bạn có chắc muốn xóa thẻ kỹ năng '${name}' không?`)) return;
+
+                                            const formData = new FormData();
+                                            formData.append('id', id);
+                                            formData.append('__RequestVerificationToken', token);
+
+                                            fetch('/Admin/SkillManagement/Delete', { method: 'POST', body: formData })
+                                                .then(res => res.json())
+                                                .then(data => {
+                                                    if (data.success) {
+                                                        alert(data.message);
+                                                        const row = document.getElementById(`row-skill-${id}`);
+                                                        if (row) row.remove();
+                                                    } else {
+                                                        // Hiển thị lý do nghiệp vụ (ví dụ: đang có tin tuyển dụng sử dụng)
+                                                        alert('Không thể xóa: ' + data.message);
+                                                    }
+                                                })
+                                                .catch(err => alert('Lỗi kết nối: ' + err));
+                                        }
+                                    </script>
+                                }

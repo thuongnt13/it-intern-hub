@@ -1,0 +1,108 @@
+@model IEnumerable<ITInternHub.Models.Entities.Record>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Sổ Theo Dõi Sinh Viên Thực Tập";
+    var terms = ViewBag.Terms as List<ITInternHub.Models.Entities.Term>;
+    int? currentTermId = ViewBag.CurrentTermId;
+}
+
+<!-- BỘ LỌC TÌM KIẾM -->
+<div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
+    <div class="card-body p-3">
+        <form method="get" asp-action="Index" class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <select name="termId" class="form-select" onchange="this.form.submit()">
+                    <option value="">-- Tất cả Đợt thực tập --</option>
+                    @if (terms != null)
+                    {
+                        foreach (var t in terms)
+                        {
+                            <option value="@t.Id" selected="@(currentTermId == t.Id)">@t.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-5">
+                <input type="text" name="keyword" value="@ViewBag.CurrentKeyword" class="form-control"
+                       placeholder="Tìm theo tên SV, MSSV, tên Doanh nghiệp..." />
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100 fw-semibold"
+                        style="background-color: var(--brand-blue);">
+                    <i class="ri-search-line"></i> Tra cứu
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- SỔ THEO DÕI TIẾN ĐỘ -->
+<div class="card border-0 shadow-sm rounded-4 bg-white">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h6 class="mb-0 fw-bold"><i class="ri-contacts-book-2-line text-success me-1"></i> Danh sách sinh viên thực tập
+            chính khóa (@Model.Count() sinh viên)</h6>
+            <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill">Khoa CNTT Giám sát</span>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Mã SV</th>
+                            <th>Họ và Tên</th>
+                            <th>Lớp / Ngành</th>
+                            <th>Doanh nghiệp tiếp nhận</th>
+                            <th>Người hướng dẫn (Mentor)</th>
+                            <th>Thời gian</th>
+                            <th class="text-center">Nhật ký tuần</th>
+                            <th class="text-end pe-4">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var r in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold text-primary">@r.Student.StudentCode</td>
+                                    <td class="fw-semibold">@r.Student.User.FullName</td>
+                                    <td>@r.Student.ClassName - <small class="text-muted">@r.Student.Major</small></td>
+                                    <td class="fw-semibold">@r.Company.CompanyName</td>
+                                    <td>
+                                        <div>@r.SupervisorName</div>
+                                        <small class="text-muted">@r.SupervisorEmail</small>
+                                    </td>
+                                    <td class="small">
+                                        @r.StartDate.ToString("dd/MM/yyyy") - @r.ExpectedEndDate.ToString("dd/MM/yyyy")
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge bg-info-subtle text-info px-3 py-2 rounded-pill fw-bold">
+                                            <i class="ri-booklet-line me-1"></i> @r.WeeklyReports.Count báo cáo
+                                        </span>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        @if (r.Status == 2)
+                                        {
+                                            <span class="badge bg-success px-3 py-2 rounded-pill"><i class="ri-check-line"></i> Hoàn
+                                                thành</span>
+                                            }
+                                    else
+                                            {
+                                                <span class="badge bg-primary px-3 py-2 rounded-pill">Đang thực tập</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                    else
+                            {
+                                <tr>
+                                    <td colspan="8" class="text-center py-5 text-muted">Không tìm thấy sinh viên thực tập nào phù
+                                        hợp.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>

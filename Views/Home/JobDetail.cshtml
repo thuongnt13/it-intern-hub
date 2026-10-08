@@ -1,0 +1,143 @@
+@model ITInternHub.Models.Entities.JobPost
+@{
+    ViewData["Title"] = Model.Title;
+    bool hasApplied = ViewBag.HasApplied ?? false;
+}
+
+<div class="container py-4">
+    <div class="row g-4">
+        <!-- CỘT TRÁI: CHI TIẾT BÀI ĐĂNG TUYỂN DỤNG -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+                <div class="d-flex align-items-start gap-3 border-bottom pb-4 mb-4">
+                    <img src="@(Model.Company?.LogoUrl ?? "https://ui-avatars.com/api/?name=Company")"
+                         class="rounded-3 border" style="width: 75px; height: 75px; object-fit: contain;" />
+                    <div class="flex-grow-1">
+                        <h4 class="fw-bold text-dark mb-1">@Model.Title</h4>
+                        <h6 class="text-primary mb-2">@Model.Company?.CompanyName</h6>
+                        <div class="d-flex flex-wrap gap-2 text-secondary small">
+                            <span><i class="ri-map-pin-line text-danger"></i> @Model.City</span>
+                            <span>•</span>
+                            <span><i class="ri-money-dollar-circle-line text-success"></i> @(Model.IsUnpaid ? "Không lương" : $"{Model.SalaryMin:N0} - {Model.SalaryMax:N0} đ/tháng")</span>
+                            <span>•</span>
+                            <span><i class="ri-time-line text-warning"></i> Hạn nộp:
+                                @Model.Deadline.ToString("dd/MM/yyyy")</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NÚT HÀNH ĐỘNG ỨNG TUYỂN -->
+                    <div class="d-flex gap-2 mb-4">
+                        @if (hasApplied)
+                        {
+                            <button class="btn btn-secondary px-4 py-2 rounded-3 fw-bold disabled w-100">
+                                <i class="ri-checkbox-circle-line me-1"></i> Bạn đã nộp đơn cho vị trí này
+                            </button>
+                        }
+                        else if (User.IsInRole("ROLE_STUDENT"))
+                        {
+                            <button class="btn btn-primary px-4 py-2 rounded-3 fw-bold w-100 shadow-sm" data-bs-toggle="modal"
+                                    data-bs-target="#applyModal" style="background-color: var(--brand-blue);">
+                                <i class="ri-send-plane-fill me-1"></i> Ứng tuyển ngay
+                            </button>
+                        }
+                        else if (User.Identity?.IsAuthenticated != true)
+                        {
+                            <a href="/Account/Login?returnUrl=/Jobs/Detail/@Model.Id"
+                               class="btn btn-primary px-4 py-2 rounded-3 fw-bold w-100 text-center"
+                               style="background-color: var(--brand-blue);">
+                                Đăng nhập để ứng tuyển
+                            </a>
+                        }
+                    </div>
+
+                    <!-- KỸ NĂNG YÊU CẦU -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-dark mb-2">Yêu cầu công nghệ & Kỹ năng:</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var js in Model.JobSkills)
+                            {
+                                <span
+                                    class="badge @(js.PriorityLevel == 1 ? "bg-primary" : "bg-light text-dark border") px-3 py-2 fs-6">
+                                    @js.Skill?.Name @(js.PriorityLevel == 1 ? "(Bắt buộc)" : "(Ưu tiên)")
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- NỘI DUNG MÔ TẢ CHI TIẾT -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-dark border-start border-primary border-4 ps-2 mb-2">Mô tả công việc</h6>
+                        <p class="text-secondary" style="white-space: pre-line;">@Model.Description</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-dark border-start border-primary border-4 ps-2 mb-2">Yêu cầu ứng viên</h6>
+                        <p class="text-secondary" style="white-space: pre-line;">@Model.Requirements</p>
+                    </div>
+
+                    <div>
+                        <h6 class="fw-bold text-dark border-start border-primary border-4 ps-2 mb-2">Quyền lợi được hưởng
+                        </h6>
+                        <p class="text-secondary" style="white-space: pre-line;">@Model.Benefits</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CỘT PHẢI: THÔNG TIN DOANH NGHIỆP -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+                    <h6 class="fw-bold text-dark mb-3">Thông tin Doanh nghiệp</h6>
+                    <p class="small text-secondary mb-2"><i
+                        class="ri-building-line text-primary me-2"></i>@Model.Company?.CompanyName</p>
+                        <p class="small text-secondary mb-2"><i
+                            class="ri-map-pin-2-line text-primary me-2"></i>@Model.Company?.Address, @Model.Company?.City
+                        </p>
+                        <p class="small text-secondary mb-2"><i class="ri-global-line text-primary me-2"></i><a
+                            href="@Model.Company?.WebsiteUrl" target="_blank"
+                            class="text-decoration-none">@Model.Company?.WebsiteUrl</a></p>
+                            <p class="small text-secondary mb-0"><i
+                                class="ri-mail-line text-primary me-2"></i>@Model.Company?.CompanyEmail</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODAL NỘP ĐƠN ỨNG TUYỂN DÀNH CHO SINH VIÊN -->
+                @if (User.IsInRole("ROLE_STUDENT"))
+                {
+                    <div class="modal fade text-start" id="applyModal" tabindex="-1">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form action="/Student/Apply" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="jobPostId" value="@Model.Id" />
+                                    <div class="modal-header">
+                                        <h6 class="modal-title fw-bold text-primary"><i class="ri-send-plane-line me-1"></i> Ứng tuyển:
+                                            @Model.Title</h6>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label class="form-label small fw-semibold">Đường dẫn CV (Link Google Drive / PDF online)
+                                                    *</label>
+                                                    <input type="url" name="cvUrl" class="form-control" required
+                                                           placeholder="https://drive.google.com/your-cv.pdf" />
+                                                    <small class="text-muted">Đảm bảo quyền xem link là công khai để nhà tuyển dụng mở được
+                                                        file.</small>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label small fw-semibold">Thư giới thiệu bản thân (Cover letter)</label>
+                                                        <textarea name="coverLetter" class="form-control" rows="4"
+                                                                  placeholder="Nêu lý do bạn muốn ứng tuyển, các dự án công nghệ đã từng làm..."></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+                                                    <button type="submit" class="btn btn-primary btn-sm px-4">Gửi hồ sơ ứng tuyển</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            }

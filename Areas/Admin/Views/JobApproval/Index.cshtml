@@ -1,0 +1,419 @@
+@model ITInternHub.Models.ViewModels.JobApprovalIndexViewModel
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Quản lý & Phê duyệt Bài đăng Tuyển dụng";
+}
+
+@Html.AntiForgeryToken()
+
+<!-- THANH ĐIỀU HƯỚNG TABS (BOOTSTRAP 5 NAV-TABS) -->
+<ul class="nav nav-pills p-2 bg-white rounded-4 shadow-sm mb-4 border" id="jobApprovalTabs" role="tablist">
+    <li class="nav-item me-2" role="presentation">
+        <button class="nav-link active fw-bold px-4 py-2 rounded-3 d-flex align-items-center gap-2" id="pending-tab"
+                data-bs-toggle="tab" data-bs-target="#tabPending" type="button" role="tab">
+            
+            <span>Tin chờ duyệt</span>
+            <span id="badgePendingCount"
+                  class="badge bg-warning text-dark rounded-pill px-2">@Model.PendingJobs.Count</span>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link fw-bold px-4 py-2 rounded-3 d-flex align-items-center gap-2" id="published-tab"
+                data-bs-toggle="tab" data-bs-target="#tabPublished" type="button" role="tab">
+            
+            <span>Tất cả tin đã duyệt</span>
+            <span class="badge bg-success rounded-pill px-2">@Model.PublishedJobs.Count</span>
+        </button>
+    </li>
+</ul>
+
+<!-- NỘI DUNG CỦA 2 TABS -->
+<div class="tab-content" id="jobApprovalTabsContent">
+    
+    <!-- ============================================================== -->
+    <!-- TAB 1: TIN CHỜ DUYỆT (CÓ CHECKBOX & DUYỆT/TỪ CHỐI HÀNG LOẠT) -->
+    <!-- ============================================================== -->
+    <div class="tab-pane fade show active" id="tabPending" role="tabpanel">
+        
+        <!-- THANH TÁC VỤ HÀNG LOẠT (CHỈ HIỆN KHI CHỌN CHECKBOX) -->
+        <div id="bulkActionBar" class="card border-0 shadow-sm rounded-4 mb-3 d-none bg-primary-subtle border-primary">
+            <div class="card-body py-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="ri-checkbox-circle-fill text-primary fs-4"></i>
+                    <span class="fw-bold text-dark">Đã chọn: <span id="selectedCountBadge"
+                                                                       class="badge bg-primary fs-6">0</span> bài đăng</span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-success fw-semibold px-3" onclick="executeBulkApprove()">
+                            <i class="ri-check-double-line me-1"></i> Duyệt các bài đã chọn
+                        </button>
+                        <button type="button" class="btn btn-outline-danger fw-semibold px-3" data-bs-toggle="modal"
+                                data-bs-target="#bulkRejectModal">
+                            <i class="ri-close-circle-line me-1"></i> Từ chối các bài đã chọn
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold"><i class="ri-time-line text-warning me-1"></i> Danh sách tin đang chờ phê duyệt
+                    </h6>
+                    <small class="text-muted">Chọn checkbox để thao tác nhiều bài cùng lúc</small>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="pendingJobsTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4 text-center" style="width: 40px;">
+                                        <input type="checkbox" id="checkAll" class="form-check-input" title="Chọn tất cả" />
+                                    </th>
+                                    <th>Tiêu đề tin</th>
+                                    <th>Doanh nghiệp</th>
+                                    <th>Lĩnh vực</th>
+                                    <th>Khu vực</th>
+                                    <th>Mức trợ cấp</th>
+                                    <th>Hạn nộp</th>
+                                    <th class="text-end pe-4">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.PendingJobs.Any())
+                                {
+                                    foreach (var job in Model.PendingJobs)
+                                    {
+                                        <tr id="row-job-@job.Id">
+                                            <td class="ps-4 text-center">
+                                                <input type="checkbox" class="form-check-input job-checkbox" value="@job.Id" />
+                                            </td>
+                                            <td>
+                                                <h6 class="mb-0 fw-bold text-dark">@job.Title</h6>
+                                                <small class="text-muted">Ngày tạo: @job.CreatedAt.ToString("dd/MM/yyyy")</small>
+                                            </td>
+                                            <td class="fw-semibold">@job.Company?.CompanyName</td>
+                                            <td><span class="badge bg-light text-dark border">@job.Industry?.Name</span></td>
+                                            <td>@job.City</td>
+                                            <td class="text-primary fw-semibold">
+                                                @(job.IsUnpaid ? "Không lương" : $"{job.SalaryMin:N0} - {job.SalaryMax:N0} đ")
+                                            </td>
+                                            <td>@job.Deadline.ToString("dd/MM/yyyy")</td>
+                                            <td class="text-end pe-4">
+                                                <button type="button" class="btn btn-success btn-sm px-3 me-1"
+                                                        onclick="approveJob(@job.Id)">
+                                                    <i class="ri-check-line"></i> Duyệt
+                                                </button>
+                                                <button type="button" class="btn btn-outline-danger btn-sm"
+                                                        onclick="openSingleRejectModal(@job.Id, '@Html.Raw(job.Title.Replace("'", "\\'"))')">
+                                                    <i class="ri-close-line"></i> Từ chối
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr id="noPendingJobsRow">
+                                        <td colspan="8" class="text-center py-5 text-muted">
+                                            <i class="ri-checkbox-circle-line display-4 text-success"></i>
+                                            <p class="mt-2 mb-0">Tuyệt vời! Hiện tại không còn bài đăng nào cần duyệt.</p>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- TAB 2: TẤT CẢ TIN ĐÃ DUYỆT (DANH SÁCH HIỂN THỊ CÔNG KHAI) -->
+        <!-- ============================================================== -->
+        <div class="tab-pane fade" id="tabPublished" role="tabpanel">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0 fw-bold text-success"><i class="ri-checkbox-circle-fill me-1"></i> Danh sách tin tuyển
+                        dụng đã phê duyệt & đang hiển thị (@Model.PublishedJobs.Count tin)</h6>
+                        <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill">Đang hoạt động</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="ps-4">Tiêu đề tin</th>
+                                        <th>Doanh nghiệp</th>
+                                        <th>Lĩnh vực & Kỹ năng yêu cầu</th>
+                                        <th>Trợ cấp</th>
+                                        <th>Hạn nộp</th>
+                                        <th class="text-center">Tương tác</th>
+                                        <th class="text-end pe-4">Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (Model.PublishedJobs.Any())
+                                    {
+                                        foreach (var job in Model.PublishedJobs)
+                                        {
+                                            <tr>
+                                                <td class="ps-4">
+                                                    <h6 class="mb-1 fw-bold">@job.Title</h6>
+                                                    <small class="text-muted"><i class="ri-map-pin-line"></i> @job.City</small>
+                                                </td>
+                                                <td class="fw-semibold">@job.Company?.CompanyName</td>
+                                                <td>
+                                                    <span
+                                                    class="badge bg-light text-dark border mb-1 d-inline-block">@job.Industry?.Name</span>
+                                                    <div>
+                                                        @foreach (var js in job.JobSkills.Take(3))
+                                                        {
+                                                            <span class="badge bg-primary-subtle text-primary me-1"
+                                                                  style="font-size: 0.72rem;">
+                                                                @js.Skill?.Name
+                                                            </span>
+                                                        }
+                                                    </div>
+                                                </td>
+                                                <td class="text-primary fw-semibold">
+                                                    @(job.IsUnpaid ? "Không lương" : $"{job.SalaryMin:N0} - {job.SalaryMax:N0} đ")
+                                                </td>
+                                                <td>@job.Deadline.ToString("dd/MM/yyyy")</td>
+                                                <td class="text-center">
+                                                    <span class="badge bg-light text-secondary border me-1" title="Lượt xem">
+                                                        <i class="ri-eye-line"></i> @job.ViewCount
+                                                    </span>
+                                                    <span class="badge bg-info-subtle text-info" title="Hồ sơ đã nộp">
+                                                        <i class="ri-user-line"></i> @job.ApplicationCount CV
+                                                    </span>
+                                                </td>
+                                                <td class="text-end pe-4">
+                                                    <span class="badge bg-success px-3 py-2 rounded-pill">
+                                                        <i class="ri-check-line me-1"></i> Đang hiển thị
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="7" class="text-center py-5 text-muted">
+                                                <p class="mb-0">Chưa có bài đăng nào được duyệt.</p>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL TỪ CHỐI ĐƠN LẺ -->
+        <div class="modal fade text-start" id="singleRejectModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="modal-title fw-bold text-danger">Từ chối bài đăng</h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="singleRejectJobId" />
+                        <p class="small text-muted mb-2" id="singleRejectJobTitle"></p>
+                        <label class="form-label small fw-semibold">Lý do từ chối *</label>
+                        <textarea id="singleRejectReason" class="form-control" rows="3"
+                                  placeholder="Nhập lý do chi tiết để doanh nghiệp chỉnh sửa..."></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-danger btn-sm px-3" onclick="confirmSingleReject()">Xác nhận từ
+                            chối</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL TỪ CHỐI HÀNG LOẠT -->
+            <div class="modal fade text-start" id="bulkRejectModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h6 class="modal-title fw-bold text-danger"><i class="ri-error-warning-line me-1"></i> Từ chối hàng loạt
+                                bài đăng</h6>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <label class="form-label small fw-semibold">Lý do từ chối chung cho các bài đã chọn *</label>
+                                <textarea id="bulkRejectReasonInput" class="form-control" rows="3"
+                                          placeholder="Mức trợ cấp hoặc địa chỉ chưa rõ ràng, vui lòng cập nhật lại..."></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="executeBulkReject()">Xác nhận từ chối tất
+                                    cả</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @section Scripts {
+                        <script>
+                            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                            // Xử lý Checkbox Chọn tất cả
+                            const checkAll = document.getElementById('checkAll');
+                            const bulkActionBar = document.getElementById('bulkActionBar');
+                            const badge = document.getElementById('selectedCountBadge');
+
+                            if (checkAll) {
+                                checkAll.addEventListener('change', function () {
+                                    document.querySelectorAll('.job-checkbox').forEach(cb => cb.checked = checkAll.checked);
+                                    updateBulkBar();
+                                });
+                            }
+
+                            document.addEventListener('change', function (e) {
+                                if (e.target && e.target.classList.contains('job-checkbox')) {
+                                    const checkboxes = document.querySelectorAll('.job-checkbox');
+                                    if (checkAll) checkAll.checked = Array.from(checkboxes).every(c => c.checked);
+                                    updateBulkBar();
+                                }
+                            });
+
+                            function updateBulkBar() {
+                                const count = document.querySelectorAll('.job-checkbox:checked').length;
+                                if (count > 0) {
+                                    bulkActionBar.classList.remove('d-none');
+                                    badge.innerText = count;
+                                } else {
+                                    bulkActionBar.classList.add('d-none');
+                                }
+                            }
+
+                            function removeRows(ids) {
+                                ids.forEach(id => {
+                                    const row = document.getElementById(`row-job-${id}`);
+                                    if (row) row.remove();
+                                });
+                                const remaining = document.querySelectorAll('.job-checkbox').length;
+                                const badgeCount = document.getElementById('badgePendingCount');
+                                if (badgeCount) badgeCount.innerText = remaining;
+                                updateBulkBar();
+
+                                if (remaining === 0) {
+                                    const tbody = document.querySelector('#pendingJobsTable tbody');
+                                    tbody.innerHTML = `
+                                                                    <tr id="noPendingJobsRow">
+                                                                        <td colspan="8" class="text-center py-5 text-muted">
+                                                                            <i class="ri-checkbox-circle-line display-4 text-success"></i>
+                                                                            <p class="mt-2 mb-0">Tuyệt vời! Hiện tại không còn bài đăng nào cần duyệt.</p>
+                                                                        </td>
+                                                                    </tr>`;
+                                }
+                            }
+
+                            // 1. AJAX DUYỆT ĐƠN LẺ
+                            function approveJob(id) {
+                                if (!confirm('Bạn có chắc muốn phê duyệt bài đăng này không?')) return;
+
+                                const formData = new FormData();
+                                formData.append('id', id);
+                                formData.append('__RequestVerificationToken', token);
+
+                                fetch('/Admin/JobApproval/Approve', { method: 'POST', body: formData })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            alert(data.message);
+                                            removeRows([id]);
+                                            location.reload(); // Tải lại để bài vừa duyệt xuất hiện ngay ở Tab 2
+                                        } else {
+                                            alert('Lỗi: ' + data.message);
+                                        }
+                                    })
+                                    .catch(err => alert('Lỗi kết nối máy chủ: ' + err));
+                            }
+
+                            // 2. AJAX TỪ CHỐI ĐƠN LẺ
+                            function openSingleRejectModal(id, title) {
+                                document.getElementById('singleRejectJobId').value = id;
+                                document.getElementById('singleRejectJobTitle').innerText = 'Bài đăng: ' + title;
+                                document.getElementById('singleRejectReason').value = '';
+                                new bootstrap.Modal(document.getElementById('singleRejectModal')).show();
+                            }
+
+                            function confirmSingleReject() {
+                                const id = document.getElementById('singleRejectJobId').value;
+                                const reason = document.getElementById('singleRejectReason').value.trim();
+                                if (!reason) { alert('Vui lòng nhập lý do từ chối!'); return; }
+
+                                const formData = new FormData();
+                                formData.append('id', id);
+                                formData.append('reason', reason);
+                                formData.append('__RequestVerificationToken', token);
+
+                                fetch('/Admin/JobApproval/Reject', { method: 'POST', body: formData })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            alert(data.message);
+                                            bootstrap.Modal.getInstance(document.getElementById('singleRejectModal')).hide();
+                                            removeRows([id]);
+                                        } else {
+                                            alert('Lỗi: ' + data.message);
+                                        }
+                                    })
+                                    .catch(err => alert('Lỗi kết nối máy chủ: ' + err));
+                            }
+
+                            // 3. AJAX DUYỆT HÀNG LOẠT
+                            function executeBulkApprove() {
+                                const selected = Array.from(document.querySelectorAll('.job-checkbox:checked')).map(cb => cb.value);
+                                if (selected.length === 0) return;
+                                if (!confirm(`Bạn có chắc muốn duyệt cùng lúc ${selected.length} bài đăng này không?`)) return;
+
+                                const formData = new FormData();
+                                selected.forEach(id => formData.append('selectedJobIds', id));
+                                formData.append('__RequestVerificationToken', token);
+
+                                fetch('/Admin/JobApproval/BulkApprove', { method: 'POST', body: formData })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            alert(data.message);
+                                            location.reload(); // Cập nhật lại cả 2 Tab
+                                        } else {
+                                            alert('Lỗi: ' + data.message);
+                                        }
+                                    })
+                                    .catch(err => alert('Lỗi kết nối máy chủ: ' + err));
+                            }
+
+                            // 4. AJAX TỪ CHỐI HÀNG LOẠT
+                            function executeBulkReject() {
+                                const selected = Array.from(document.querySelectorAll('.job-checkbox:checked')).map(cb => cb.value);
+                                const reason = document.getElementById('bulkRejectReasonInput').value.trim();
+                                if (!reason) { alert('Vui lòng nhập lý do từ chối chung!'); return; }
+
+                                const formData = new FormData();
+                                selected.forEach(id => formData.append('selectedJobIds', id));
+                                formData.append('bulkRejectReason', reason);
+                                formData.append('__RequestVerificationToken', token);
+
+                                fetch('/Admin/JobApproval/BulkReject', { method: 'POST', body: formData })
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            alert(data.message);
+                                            bootstrap.Modal.getInstance(document.getElementById('bulkRejectModal')).hide();
+                                            removeRows(selected);
+                                        } else {
+                                            alert('Lỗi: ' + data.message);
+                                        }
+                                    })
+                                    .catch(err => alert('Lỗi kết nối máy chủ: ' + err));
+                            }
+                        </script>
+                    }

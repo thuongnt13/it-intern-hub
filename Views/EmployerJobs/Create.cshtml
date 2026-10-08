@@ -1,0 +1,183 @@
+@model ITInternHub.Core.Application.DTOs.CreateJobPostDto
+@{
+    ViewData["Title"] = "Đăng tin tuyển dụng thực tập sinh";
+    var industries = ViewBag.Industries as List<ITInternHub.Models.Entities.Industry>;
+    var skills = ViewBag.Skills as List<ITInternHub.Models.Entities.Skill>;
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
+                    <div>
+                        <h4 class="fw-bold mb-1" style="color: var(--brand-navy);">
+                            @* <i
+                            class="ri-file-add-line text-primary me-2"></i> *@
+                            Đăng tin tuyển thực tập sinh mới</h4>
+                            <small class="text-muted">Tin đăng sẽ được Ban quản trị phê duyệt trước khi hiển thị công
+                                khai</small>
+                            </div>
+                            <a href="/Employer/Jobs" class="btn btn-outline-secondary btn-sm"><i class="ri-arrow-left-line"></i>
+                                Quay lại</a>
+                            </div>
+
+                            <form asp-action="Create" method="post">
+                                @Html.AntiForgeryToken()
+                                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small mb-4"></div>
+
+                                <!-- THÔNG TIN CHUNG -->
+                                <h6 class="fw-bold text-uppercase text-primary small mb-3">1. Thông tin vị trí tuyển dụng</h6>
+                    
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-8">
+                                        <label asp-for="Title" class="form-label small fw-semibold">Tiêu đề tin tuyển dụng *</label>
+                                        <input asp-for="Title" class="form-control"
+                                               placeholder="VD: Thực tập sinh Backend Java (Spring Boot)" />
+                                        <span asp-validation-for="Title" class="text-danger small"></span>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-semibold">Lĩnh vực chuyên môn *</label>
+                                        <select asp-for="IndustryId" class="form-select">
+                                            @if (industries != null)
+                                            {
+                                                foreach (var ind in industries)
+                                                {
+                                                    <option value="@ind.Id">@ind.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-semibold">Hình thức làm việc *</label>
+                                        <select asp-for="WorkingMode" class="form-select">
+                                            <option value="1">Làm tại văn phòng (Onsite)</option>
+                                            <option value="2">Làm việc từ xa (Remote)</option>
+                                            <option value="3">Kết hợp linh hoạt (Hybrid)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label small fw-semibold">Khu vực / Tỉnh thành *</label>
+                                        <select asp-for="City" class="form-select">
+                                            <option value="Hà Nội">Hà Nội</option>
+                                            <option value="Đà Nẵng">Đà Nẵng</option>
+                                            <option value="TP. Hồ Chí Minh">TP. Hồ Chí Minh</option>
+                                            <option value="Vinh">Nghệ An (TP. Vinh)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label asp-for="Quantity" class="form-label small fw-semibold">Số lượng cần tuyển</label>
+                                        <input asp-for="Quantity" type="number" class="form-control" min="1" />
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label asp-for="WorkingAddress" class="form-label small fw-semibold">Địa chỉ làm việc chi tiết
+                                        *</label>
+                                        <input asp-for="WorkingAddress" class="form-control"
+                                               placeholder="Tầng, Tòa nhà, Đường, Quận/Huyện..." />
+                                        <span asp-validation-for="WorkingAddress" class="text-danger small"></span>
+                                    </div>
+
+                                    <!-- MỨC TRỢ CẤP & HẠN NỘP -->
+                                    <h6 class="fw-bold text-uppercase text-primary small mb-3">2. Trợ cấp & Hạn nộp</h6>
+                                    <div class="row g-3 mb-4">
+                                        <div class="col-md-4">
+                                            <label class="form-label small fw-semibold">Trợ cấp từ (VNĐ/tháng)</label>
+                                            <input asp-for="SalaryMin" type="number" step="500000" class="form-control"
+                                                   placeholder="3000000" />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label small fw-semibold">Trợ cấp đến (VNĐ/tháng)</label>
+                                            <input asp-for="SalaryMax" type="number" step="500000" class="form-control"
+                                                   placeholder="6000000" />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label asp-for="Deadline" class="form-label small fw-semibold">Hạn nộp hồ sơ *</label>
+                                            <input asp-for="Deadline" type="date" class="form-control" />
+                                        </div>
+                                    </div>
+
+                                    <!-- GẮN TAG KỸ NĂNG & THIẾT LẬP MỨC ĐỘ ƯU TIÊN -->
+                                    <h6 class="fw-bold text-uppercase text-primary small mb-2">3. Yêu cầu công nghệ (Gắn Tag Kỹ năng) *
+                                    </h6>
+                                    <p class="text-muted small mb-3">Chọn các kỹ năng và chỉ định là <strong>Bắt buộc</strong> (tiên
+                                        quyết để lọc CV) hoặc <strong>Ưu tiên</strong> (cộng điểm Match Score).</p>
+                    
+                                        <input type="hidden" name="selectedSkillsData" id="selectedSkillsData" />
+
+                                        <div class="card bg-light border p-3 rounded-3 mb-4">
+                                            <div class="row g-2" style="max-height: 250px; overflow-y: auto;">
+                                                @if (skills != null)
+                                                {
+                                                    foreach (var skill in skills)
+                                                    {
+                                                        <div class="col-md-6 col-lg-4">
+                                                            <div
+                                                                class="d-flex align-items-center justify-content-between p-2 bg-white rounded border">
+                                                                <div class="form-check mb-0">
+                                                                    <input class="form-check-input skill-check" type="checkbox" value="@skill.Id"
+                                                                           id="sk_@skill.Id" onchange="updateSkillsPayload()" />
+                                                                    <label class="form-check-label small fw-semibold"
+                                                                           for="sk_@skill.Id">@skill.Name</label>
+                                                                </div>
+                                                                <select class="form-select form-select-sm w-auto skill-priority" id="pr_@skill.Id"
+                                                                        onchange="updateSkillsPayload()">
+                                                                    <option value="1">Bắt buộc</option>
+                                                                    <option value="2">Ưu tiên</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <!-- MÔ TẢ CHI TIẾT -->
+                                        <h6 class="fw-bold text-uppercase text-primary small mb-3">4. Nội dung bài đăng chi tiết</h6>
+                    
+                                        <div class="mb-3">
+                                            <label asp-for="Description" class="form-label small fw-semibold">Mô tả công việc *</label>
+                                            <textarea asp-for="Description" class="form-control" rows="4"
+                                                      placeholder="Nội dung công việc, dự án tham gia..."></textarea>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label asp-for="Requirements" class="form-label small fw-semibold">Yêu cầu ứng viên *</label>
+                                            <textarea asp-for="Requirements" class="form-control" rows="4"
+                                                      placeholder="Kiến thức nền tảng, thái độ, cam kết thời gian..."></textarea>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label asp-for="Benefits" class="form-label small fw-semibold">Quyền lợi được hưởng *</label>
+                                            <textarea asp-for="Benefits" class="form-control" rows="3"
+                                                      placeholder="Hỗ trợ dấu mộc thực tập, cơ hội lên chính thức, môi trường làm việc..."></textarea>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-3 shadow-sm"
+                                                style="background-color: var(--brand-navy);">
+                                            <i class="ri-send-plane-fill me-1"></i> Hoàn tất & Gửi phê duyệt
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @section Scripts {
+                        <script>
+                            function updateSkillsPayload() {
+                                const checks = document.querySelectorAll('.skill-check:checked');
+                                const result = [];
+                                checks.forEach(chk => {
+                                    const skillId = chk.value;
+                                    const priority = document.getElementById('pr_' + skillId).value;
+                                    result.push(`${skillId}:${priority}`);
+                                });
+                                document.getElementById('selectedSkillsData').value = result.join(',');
+                            }
+                        </script>
+                    }

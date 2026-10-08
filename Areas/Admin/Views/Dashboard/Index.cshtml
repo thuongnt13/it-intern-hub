@@ -1,0 +1,64 @@
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Tổng quan Quản trị Nền tảng";
+}
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card border-start border-warning border-4">
+            <span class="text-muted text-uppercase fw-semibold small">Tin chờ duyệt</span>
+            <h3 class="fw-bold text-dark mt-2 mb-0">@ViewBag.PendingJobsCount</h3>
+            <a href="/Admin/JobApproval" class="small text-warning text-decoration-none mt-1 d-block">Xem chi tiết <i
+                class="ri-arrow-right-line"></i></a>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card border-start border-primary border-4">
+                <span class="text-muted text-uppercase fw-semibold small">Tổng Ứng viên SV</span>
+                <h3 class="fw-bold text-dark mt-2 mb-0">@ViewBag.TotalStudents</h3>
+                <small class="text-primary"><i class="ri-user-star-line"></i> Đang hoạt động</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card border-start border-success border-4">
+                <span class="text-muted text-uppercase fw-semibold small">Doanh nghiệp</span>
+                <h3 class="fw-bold text-dark mt-2 mb-0">@ViewBag.TotalCompanies</h3>
+                <small class="text-success"><i class="ri-building-line"></i> Đối tác trường</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card border-start border-info border-4">
+                <span class="text-muted text-uppercase fw-semibold small">Lượt Ứng tuyển</span>
+                <h3 class="fw-bold text-dark mt-2 mb-0">@ViewBag.TotalApplications</h3>
+                <small class="text-info"><i class="ri-send-plane-line"></i> Toàn hệ thống</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white py-3">
+            <h6 class="card-title mb-0 fw-bold"><i class="ri-fire-line text-danger me-1"></i> Top Kỹ Năng Đang Tuyển Dụng
+                Nhiều Nhất (Báo cáo Nhà trường)</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Tên Công Nghệ / Kỹ Năng</th>
+                                <th>Số lượng tin tuyển dụng yêu cầu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in ViewBag.TopSkills)
+                            {
+                                <tr>
+                                    <td><span class="badge bg-info-subtle text-info fs-6 px-3 py-1">@item.SkillName</span></td>
+                                    <td class="fw-bold">@item.Count tin đăng</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>

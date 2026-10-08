@@ -1,0 +1,319 @@
+@model IEnumerable<ITInternHub.Models.Entities.Application>
+@{
+    ViewData["Title"] = "Sàng lọc CV & Quản lý Phễu Ứng viên";
+    var companyJobs = ViewBag.CompanyJobs as List<ITInternHub.Models.Entities.JobPost>;
+    long? currentJobId = ViewBag.CurrentJobPostId;
+    byte? currentStatus = ViewBag.CurrentStatus;
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-1" style="color: var(--brand-navy);"><i
+                class="ri-user-search-line text-primary me-2"></i>Sàng lọc CV & Phễu Tuyển dụng</h4>
+                <small class="text-muted">Tự động xếp hạng ứng viên theo % Match Score và điểm GPA</small>
+            </div>
+            <a href="/Employer/Jobs" class="btn btn-outline-secondary btn-sm"><i class="ri-arrow-left-line"></i> Quản lý tin
+                đăng</a>
+            </div>
+
+            <!-- BỘ LỌC TÌM KIẾM -->
+            <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
+                <div class="card-body p-3">
+                    <form method="get" asp-action="Applications" class="row g-2 align-items-center">
+                        <div class="col-md-4">
+                            <select name="jobPostId" class="form-select" onchange="this.form.submit()">
+                                <option value="">-- Tất cả bài đăng tuyển dụng --</option>
+                                @if (companyJobs != null)
+                                {
+                                    foreach (var j in companyJobs)
+                                    {
+                                        <option value="@j.Id" selected="@(currentJobId == j.Id)">@j.Title</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select name="status" class="form-select" onchange="this.form.submit()">
+                                <option value="">-- Tất cả trạng thái --</option>
+                                <option value="1" selected="@(currentStatus == 1)">1. Đã nộp hồ sơ</option>
+                                <option value="2" selected="@(currentStatus == 2)">2. Đang xem xét</option>
+                                <option value="3" selected="@(currentStatus == 3)">3. Mời phỏng vấn</option>
+                                <option value="5" selected="@(currentStatus == 5)">5. Đã gửi Offer</option>
+                                <option value="6" selected="@(currentStatus == 6)">6. Tiếp nhận chính thức</option>
+                                <option value="7" selected="@(currentStatus == 7)">7. Bị từ chối</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" name="keyword" value="@ViewBag.CurrentKeyword" class="form-control"
+                                   placeholder="Tên ứng viên, MSSV..." />
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100 fw-semibold"
+                                    style="background-color: var(--brand-blue);"><i class="ri-filter-3-line"></i> Lọc hồ sơ</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- DANH SÁCH ỨNG VIÊN -->
+            <div class="card border-0 shadow-sm rounded-4 bg-white">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Ứng viên / MSSV</th>
+                                    <th>Vị trí ứng tuyển</th>
+                                    <th class="text-center">Độ khớp kỹ năng</th>
+                                    <th>GPA</th>
+                                    <th>CV / Thư xin việc</th>
+                                    <th>Trạng thái</th>
+                                    <th class="text-end pe-4">Thao tác phễu</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var app in Model)
+                                    {
+                                        <tr id="row-app-@app.Id">
+                                            <td class="ps-4">
+                                                <h6 class="mb-0 fw-bold text-dark">@app.Student.User.FullName</h6>
+                                                <small class="text-muted">MSSV: @app.Student.StudentCode -
+                                                    @app.Student.ClassName</small>
+                                                </td>
+                                                <td>
+                                                    <span class="text-dark fw-semibold small">@app.JobPost.Title</span>
+                                                </td>
+                                                <td class="text-center">
+                                                    <span class="badge bg-success-subtle text-success fs-6 fw-bold">@app.MatchScore%</span>
+                                                </td>
+                                                <td class="fw-bold text-primary">@app.Student.Gpa?.ToString("0.00")</td>
+                                                <td>
+                                                    <a href="@app.CvUrl" target="_blank"
+                                                       class="btn btn-sm btn-outline-primary rounded-pill px-3 py-1">
+                                                        <i class="ri-file-pdf-line me-1"></i> Mở CV
+                                                    </a>
+                                                    @if (!string.IsNullOrEmpty(app.CoverLetter))
+                                                    {
+                                                        <button type="button" class="btn btn-sm btn-link text-secondary p-0 ms-1"
+                                                                title="@app.CoverLetter"
+                                                                onclick="alert('@Html.Raw(app.CoverLetter.Replace("'", "\\'"))')">
+                                                            <i class="ri-chat-1-line"></i>
+                                                        </button>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    <span id="badge-status-@app.Id">
+                                                        @switch (app.Status)
+                                                        {
+                                                            case 1:
+                                                                <span class="badge bg-secondary">1. Đã nộp hồ sơ</span>
+                                                                break;
+                                                            case 2:
+
+                                                                <span class="badge bg-info text-dark">2. Đang xem xét</span>
+                                                                break;
+                                                            case 3:
+
+                                                                <span class="badge bg-warning text-dark"><i class="ri-calendar-line"></i> 3.
+                                                                    Mời phỏng vấn</span>
+                                                                    break;
+                                                case 5:
+
+                                                                        <span class="badge bg-primary">5. Đã gửi Offer</span>
+                                                                        break;
+                                                                    case 6:
+
+                                                                        <span class="badge bg-success"><i class="ri-check-line"></i> 6. Tiếp
+                                                                            nhận</span>
+                                                                            break;
+                                                case 7:
+
+                                                                                <span class="badge bg-danger">7. Từ chối</span>
+                                                                                break;
+                                                                            }
+                                                                        </span>
+                                                                    </td>
+                                                                    <td class="text-end pe-4">
+                                                                        <div class="dropdown d-inline">
+                                                                            <button class="btn btn-sm btn-light border dropdown-toggle fw-semibold"
+                                                                                    data-bs-toggle="dropdown">
+                                                                                Cập nhật tiến độ
+                                                                            </button>
+                                                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                                                                <li><a class="dropdown-item" href="javascript:void(0)"
+                                                                                       onclick="changeAppStatus(@app.Id, 2)"><i
+                                                                                    class="ri-eye-line text-info me-2"></i>Chuyển Đang xem xét</a></li>
+                                                                                    <li><a class="dropdown-item text-warning fw-semibold" href="javascript:void(0)"
+                                                                                           onclick="openScheduleModal(@app.Id, '@app.Student.User.FullName')"><i
+                                                                                        class="ri-calendar-event-line me-2"></i>Lên lịch hẹn phỏng vấn</a>
+                                                                                    </li>
+                                                                                    <li><a class="dropdown-item" href="javascript:void(0)"
+                                                                                           onclick="changeAppStatus(@app.Id, 5)"><i
+                                                                                        class="ri-mail-send-line text-primary me-2"></i>Gửi đề nghị
+                                                                                        Offer</a></li>
+                                                                                        <li><a class="dropdown-item text-success fw-semibold" href="javascript:void(0)"
+                                                                                               onclick="changeAppStatus(@app.Id, 6)"><i
+                                                                                            class="ri-user-add-line me-2"></i>Tiếp nhận thực tập chính thức</a>
+                                                                                        </li>
+                                                                                        <li>
+                                                                                            <hr class="dropdown-divider">
+                                                                                        </li>
+                                                                                        <li><a class="dropdown-item text-danger" href="javascript:void(0)"
+                                                                                               onclick="changeAppStatus(@app.Id, 7)"><i
+                                                                                            class="ri-close-circle-line me-2"></i>Từ chối hồ sơ</a></li>
+                                                                                        </ul>
+                                                                                    </div>
+                                                                                </td>
+                                                                            </tr>
+                                                                        }
+                                                                    }
+                        else
+                                                                    {
+                                                                        <tr>
+                                                                            <td colspan="7" class="text-center py-5 text-muted">Chưa có hồ sơ ứng tuyển nào phù hợp.
+                                                                            </td>
+                                                                        </tr>
+                                                                    }
+                                                                </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- MODAL HẸN PHỎNG VẤN -->
+                                        <div class="modal fade" id="scheduleModal" tabindex="-1">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h6 class="modal-title fw-bold text-primary"><i class="ri-calendar-event-line me-1"></i> Hẹn phỏng vấn:
+                                                            <span id="candidateNameSpan"></span>
+                                                        </h6>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <input type="hidden" id="scheduleAppId" />
+                                                        <div class="mb-3">
+                                                            <label class="form-label small fw-semibold">Thời gian phỏng vấn *</label>
+                                                            <input type="datetime-local" id="interviewTime" class="form-control" required />
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label small fw-semibold">Hình thức phỏng vấn *</label>
+                                                            <select id="interviewFormat" class="form-select">
+                                                                <option value="1">Trực tuyến (Google Meet / Teams)</option>
+                                                                <option value="2">Trực tiếp tại văn phòng</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label small fw-semibold">Link phòng họp hoặc Địa chỉ cụ thể *</label>
+                                                            <input type="text" id="interviewLocation" class="form-control"
+                                                                   placeholder="https://meet.google.com/xyz hoặc Tầng 5..." required />
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label small fw-semibold">Người phỏng vấn (Interviewer)</label>
+                                                            <input type="text" id="interviewerName" class="form-control"
+                                                                   placeholder="Trưởng nhóm kỹ thuật / HR..." />
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label small fw-semibold">Ghi chú cho ứng viên</label>
+                                                            <textarea id="candidateNote" class="form-control" rows="2"
+                                                                      placeholder="Chuẩn bị bài test coding hoặc đem theo laptop..."></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+                                                        <button type="button" class="btn btn-primary btn-sm px-4" onclick="submitScheduleInterview()">Xác nhận
+                                                            lên lịch</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            @section Scripts {
+                                                <script>
+                                                    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+                                                    // 1. AJAX ĐỔI TRẠNG THÁI TIẾN ĐỘ ỨNG VIÊN
+                                                    function changeAppStatus(appId, newStatus) {
+                                                        let note = '';
+                                                        if (newStatus === 7) {
+                                                            note = prompt('Nhập lý do từ chối (tùy chọn):');
+                                                        } else if (!confirm('Bạn có chắc muốn chuyển trạng thái ứng viên này?')) {
+                                                            return;
+                                                        }
+
+                                                        const formData = new FormData();
+                                                        formData.append('applicationId', appId);
+                                                        formData.append('newStatus', newStatus);
+                                                        if (note) formData.append('note', note);
+                                                        formData.append('__RequestVerificationToken', token);
+
+                                                        fetch('/Employer/Applications/ChangeStatus', { method: 'POST', body: formData })
+                                                            .then(res => res.json())
+                                                            .then(data => {
+                                                                if (data.success) {
+                                                                    alert(data.message);
+                                                                    window.location.reload(); // Dùng window.location.reload() chuẩn xác
+                                                                } else {
+                                                                    alert('Lỗi: ' + data.message);
+                                                                }
+                                                            })
+                                                            .catch(err => alert('Lỗi kết nối: ' + err));
+                                                    }
+
+                                                    // 2. MỞ MODAL HẸN PHỎNG VẤN
+                                                    function openScheduleModal(appId, candidateName) {
+                                                        document.getElementById('scheduleAppId').value = appId;
+                                                        document.getElementById('candidateNameSpan').innerText = candidateName;
+                                                        new bootstrap.Modal(document.getElementById('scheduleModal')).show();
+                                                    }
+
+                                                    // 3. AJAX LƯU LỊCH HẸN PHỎNG VẤN (ĐÃ SỬA TÊN BIẾN TRÁNH ĐÈ WINDOW.LOCATION)
+                                                    function submitScheduleInterview() {
+                                                        const appId = document.getElementById('scheduleAppId').value;
+                                                        const time = document.getElementById('interviewTime').value;
+                                                        const format = document.getElementById('interviewFormat').value;
+            
+                                                        // ĐỔI TÊN BIẾN TỪ "location" THÀNH "interviewLocationValue"
+                                                        const interviewLocationValue = document.getElementById('interviewLocation').value.trim();
+                                                        const interviewer = document.getElementById('interviewerName').value.trim();
+                                                        const note = document.getElementById('candidateNote').value.trim();
+
+                                                        if (!time || !interviewLocationValue) {
+                                                            alert('Vui lòng chọn thời gian và địa điểm/link họp!');
+                                                            return;
+                                                        }
+
+                                                        const formData = new FormData();
+                                                        formData.append('applicationId', appId);
+                                                        formData.append('startTime', time);
+                                                        formData.append('format', format);
+                                                        formData.append('locationOrLink', interviewLocationValue);
+                                                        formData.append('interviewerName', interviewer);
+                                                        formData.append('candidateNote', note);
+                                                        formData.append('__RequestVerificationToken', token);
+
+                                                        fetch('/Employer/Applications/ScheduleInterview', { method: 'POST', body: formData })
+                                                            .then(res => res.json())
+                                                            .then(data => {
+                                                                if (data.success) {
+                                                                    alert(data.message);
+                                                                    // Đóng modal và tải lại trang an toàn
+                                                                    const modalEl = document.getElementById('scheduleModal');
+                                                                    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                                                                    if (modalInstance) modalInstance.hide();
+
+                                                                    window.location.reload(); // Gọi trực tiếp trên window
+                                                                } else {
+                                                                    alert('Lỗi: ' + data.message);
+                                                                }
+                                                            })
+                                                            .catch(err => alert('Lỗi kết nối: ' + err));
+                                                    }
+                                                </script>
+                                            }

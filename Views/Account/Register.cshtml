@@ -1,0 +1,133 @@
+@model ITInternHub.Models.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Đăng ký tài khoản";
+    var roles = ViewBag.Roles as List<ITInternHub.Models.Entities.Role>;
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 bg-white">
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold" style="color: var(--brand-navy);">Tạo tài khoản IT-InternHub</h3>
+                    <p class="text-muted small">Khởi đầu hành trình kết nối cơ hội thực tập & tuyển dụng chuẩn hóa</p>
+                </div>
+
+                <form asp-action="Register" method="post" autocomplete="off">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small mb-4"></div>
+
+                    <!-- 1. CHỌN ĐỐI TƯỢNG -->
+                    <label class="form-label fw-bold small text-uppercase text-secondary mb-2">1. Chọn đối tượng của
+                        bạn: *</label>
+                        <div class="row g-3 mb-4">
+                            @if (roles != null)
+                            {
+                                foreach (var r in roles)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="card h-100 role-card p-3 border-2 @(r.Code == "ROLE_STUDENT" ? "border-primary bg-light" : "")"
+                                             style="cursor: pointer;" onclick="selectRole('@r.Id', this)">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="SelectedRoleId" id="role_@r.Id"
+                                                       value="@r.Id" @(r.Code == "ROLE_STUDENT" ? "checked" : "") required />
+                                                <label class="form-check-label fw-bold text-dark d-block ms-1" for="role_@r.Id">
+                                                    @if (r.Code == "ROLE_STUDENT")
+                                                    {
+                                                        <i class="ri-graduation-cap-line text-primary me-1"></i>
+                                                    }
+                                                    else if (r.Code == "ROLE_EMPLOYER")
+                                                    {
+
+                                                        <i class="ri-building-line text-success me-1"></i>
+                                                    }
+                                                    else
+                                                    {
+
+                                                        <i class="ri-school-line text-warning me-1"></i>
+                                                    }
+                                                    @r.Name
+                                                </label>
+                                            </div>
+                                            <small class="text-muted mt-2 d-block ms-4"
+                                                   style="font-size: 0.75rem;">@r.Description</small>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+
+                        <!-- 2. THÔNG TIN ĐĂNG NHẬP -->
+                        <label class="form-label fw-bold small text-uppercase text-secondary mb-2">2. Thông tin đăng
+                            nhập:</label>
+    
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label asp-for="FullName" class="form-label small fw-semibold">Họ và tên *</label>
+                                    <input asp-for="FullName" class="form-control" placeholder="Nguyễn Văn A"
+                                           autocomplete="off" />
+                                    <span asp-validation-for="FullName" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="Username" class="form-label small fw-semibold">Tên đăng nhập *</label>
+                                    <input asp-for="Username" class="form-control" placeholder="username123"
+                                           autocomplete="off" />
+                                    <span asp-validation-for="Username" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-6">
+                                    <label asp-for="Email" class="form-label small fw-semibold">Email chính thức *</label>
+                                    <input asp-for="Email" class="form-control" placeholder="name@vinhuni.edu.vn"
+                                           autocomplete="off" />
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="Phone" class="form-label small fw-semibold">Số điện thoại</label>
+                                    <input asp-for="Phone" class="form-control" placeholder="0912345678" autocomplete="off" />
+                                    <span asp-validation-for="Phone" class="text-danger small"></span>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label asp-for="Password" class="form-label small fw-semibold">Mật khẩu *</label>
+                                    <input asp-for="Password" class="form-control" placeholder="Tối thiểu 6 ký tự"
+                                           autocomplete="new-password" />
+                                    <span asp-validation-for="Password" class="text-danger small"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="ConfirmPassword" class="form-label small fw-semibold">Xác nhận mật khẩu
+                                        *</label>
+                                        <input asp-for="ConfirmPassword" class="form-control" placeholder="Nhập lại mật khẩu"
+                                               autocomplete="new-password" />
+                                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn w-100 py-3 fw-bold text-white rounded-3 shadow-sm"
+                                        style="background-color: var(--brand-navy);">
+                                    <i class="ri-user-add-line me-1"></i> Hoàn tất đăng ký
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @section Scripts {
+                <script>
+                    function selectRole(roleId, cardElement) {
+                        // Đánh dấu chọn radio button
+                        const radio = document.getElementById('role_' + roleId);
+                        if (radio) {
+                            radio.checked = true;
+                        }
+                        // Đổi hiệu ứng viền xanh cho card được chọn
+                        document.querySelectorAll('.role-card').forEach(c => {
+                            c.classList.remove('border-primary', 'bg-light');
+                        });
+                        cardElement.classList.add('border-primary', 'bg-light');
+                    }
+                </script>
+            }

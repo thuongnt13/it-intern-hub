@@ -1,0 +1,102 @@
+@model IEnumerable<ITInternHub.Models.Entities.JobPost>
+@{
+    ViewData["Title"] = "Quản lý bài đăng tuyển dụng";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-1" style="color: var(--brand-navy);">
+            </i>Tin tuyển dụng của Doanh nghiệp</h4>
+            <small class="text-muted">Theo dõi trạng thái kiểm duyệt và số lượng ứng viên nộp hồ sơ</small>
+        </div>
+        <a href="/Employer/Jobs/Create" class="btn btn-primary fw-semibold px-3 py-2 rounded-3"
+           style="background-color: var(--brand-blue);">
+            <i class="ri-add-line me-1"></i> Đăng tin mới
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4">Tiêu đề tin</th>
+                            <th>Kỹ năng yêu cầu</th>
+                            <th>Trợ cấp</th>
+                            <th>Hạn nộp</th>
+                            <th>Trạng thái</th>
+                            <th>Ứng tuyển</th>
+                            <th class="text-end pe-4">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var job in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <h6 class="mb-0 fw-bold">@job.Title</h6>
+                                        <small class="text-muted">@job.City - @job.Industry?.Name</small>
+                                    </td>
+                                    <td>
+                                        @foreach (var js in job.JobSkills)
+                                        {
+                                            <span
+                                                class="badge @(js.PriorityLevel == 1 ? "bg-primary" : "bg-light text-dark border") me-1">
+                                                @js.Skill?.Name
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-primary fw-semibold">
+                                        @(job.IsUnpaid ? "Không lương" : $"{job.SalaryMin:N0} - {job.SalaryMax:N0} đ")
+                                    </td>
+                                    <td>@job.Deadline.ToString("dd/MM/yyyy")</td>
+                                    <td>
+                                        @switch (job.Status)
+                                        {
+                                            case 1:
+                                                <span class="badge bg-warning text-dark"><i class="ri-time-line"></i> Chờ duyệt</span>
+                                                break;
+                                            case 2:
+                                                <span class="badge bg-success"><i class="ri-check-line"></i> Đang hiển thị</span>
+                                                break;
+                                            case 4:
+                                                <span class="badge bg-danger" title="@job.RejectionReason"><i class="ri-close-line"></i>
+                                                    Bị từ chối</span>
+                                                    break;
+                                                }
+                                        </td>
+                                        <td class="fw-bold text-center">
+                                            <span class="badge bg-info-subtle text-info px-3 py-2 rounded-pill">
+                                                @job.ApplicationCount ứng viên
+                                            </span>
+                                        </td>
+                                        <!-- CỘT THAO TÁC SỬA TIN -->
+                                        <td class="text-end pe-4">
+                                            @if (job.Status == 1 || job.Status == 4)
+                                            {
+                                                <a href="/Employer/Jobs/Edit/@job.Id"
+                                                   class="btn btn-outline-primary btn-sm px-3 rounded-pill">
+                                                    <i class="ri-edit-line me-1"></i> Sửa tin
+                                                </a>
+                                            }
+                                            else if (job.Status == 2)
+                                            {
+                                                <span class="badge bg-light text-muted border px-2 py-1"
+                                                      title="Tin đã duyệt công khai không thể sửa">
+                                                    <i class="ri-lock-line me-1"></i> Đã khóa
+                                                </span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>

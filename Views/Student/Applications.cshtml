@@ -1,0 +1,130 @@
+@model IEnumerable<ITInternHub.Models.Entities.Application>
+@{
+    ViewData["Title"] = "Đơn ứng tuyển của tôi";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-1" style="color: var(--brand-navy);"><i
+                class="ri-send-plane-line text-primary me-2"></i>Đơn ứng tuyển của tôi</h4>
+                <small class="text-muted">Theo dõi quy trình phỏng vấn, nhận Offer và kết quả đánh giá thực tập</small>
+            </div>
+            <a href="/" class="btn btn-primary btn-sm px-3 rounded-pill" style="background-color: var(--brand-blue);"><i
+                class="ri-search-line me-1"></i> Tìm việc khác</a>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Vị trí ứng tuyển</th>
+                                    <th>Doanh nghiệp</th>
+                                    <th>Ngày nộp</th>
+                                    <th class="text-center">Độ khớp</th>
+                                    <th>Trạng thái</th>
+                                    <th class="pe-4 text-end">Tiến độ & Kết quả</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var app in Model)
+                                    {
+                                        <tr>
+                                            <td class="ps-4">
+                                                <h6 class="mb-0 fw-bold"><a href="/Jobs/Detail/@app.JobPostId"
+                                                                                class="text-dark text-decoration-none">@app.JobPost?.Title</a></h6>
+                                                    <small class="text-muted"><i class="ri-map-pin-line"></i> @app.JobPost?.City</small>
+                                                </td>
+                                                <td class="fw-semibold">@app.JobPost?.Company?.CompanyName</td>
+                                                <td>@app.AppliedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                                <td class="text-center">
+                                                    <span class="badge bg-success-subtle text-success fs-6 fw-bold">@app.MatchScore%</span>
+                                                </td>
+                                                <td>
+                                                    @switch (app.Status)
+                                                    {
+                                                        case 1:
+                                                            <span class="badge bg-secondary">Đã nộp hồ sơ</span>
+                                                            break;
+                                                        case 2:
+
+                                                            <span class="badge bg-info text-dark">Đang xem xét</span>
+                                                            break;
+                                                        case 3:
+
+                                                            <span class="badge bg-warning text-dark"><i class="ri-calendar-line"></i> Mời
+                                                                phỏng vấn</span>
+                                                                break;
+                                            case 5:
+
+                                                                    <span class="badge bg-primary fs-6"><i class="ri-mail-open-line"></i>Nhận
+                                                                        được Offer</span>
+                                                                        break;
+                                            case 6:
+
+                                                                            <span class="badge bg-success fs-6"><i class="ri-check-double-line"></i> Đã
+                                                                                tiếp nhận chính thức</span>
+                                                                                break;
+                                            case 7:
+
+                                                                                    <span class="badge bg-danger">Bị từ chối</span>
+                                                                                    break;
+                                                                                }
+                                                                            </td>
+                                                                            <td class="pe-4 text-end">
+                                                                                @* TRƯỜNG HỢP 1: CÓ LỊCH PHỎNG VẤN *@
+                                                                                @if (app.Status == 3 && app.Interviews != null && app.Interviews.Any())
+                                                                                {
+                                                                                    var iv = app.Interviews.First();
+                                                                                    <div class="text-start p-2 bg-light rounded border d-inline-block">
+                                                                                        <small class="text-primary fw-bold d-block"><i class="ri-time-line"></i>
+                                                                                            @iv.StartTime.ToString("dd/MM/yyyy HH:mm")</small>
+                                                                                            <a href="@iv.LocationOrLink" target="_blank" class="small text-decoration-none"><i
+                                                                                                class="ri-link"></i> Vào phòng họp</a>
+                                                                                            </div>
+                                                                                        }
+@* TRƯỜNG HỢP 2: ĐƯỢC GỬI OFFER (STATUS = 5) -> CÓ NÚT ĐỒNG Ý NHẬN VIỆC *@
+                                        else if (app.Status == 5)
+                                                                                        {
+                                                                                            <form asp-action="AcceptOffer" method="post" class="d-inline"
+                                                                                                  onsubmit="return confirm('Bạn có đồng ý nhận vị trí thực tập này không? Sổ thực tập sẽ được kích hoạt ngay!');">
+                                                                                                @Html.AntiForgeryToken()
+                                                                                                <input type="hidden" name="applicationId" value="@app.Id" />
+                                                                                                <button type="submit"
+                                                                                                        class="btn btn-sm btn-success px-3 fw-bold rounded-pill shadow-sm">
+                                                                                                    <i class="ri-check-line me-1"></i> Đồng ý nhận việc
+                                                                                                </button>
+                                                                                            </form>
+                                                                                        }
+                                                                                        @* TRƯỜNG HỢP 3: ĐÃ TIẾP NHẬN CHÍNH THỨC (STATUS = 6) *@
+                                                                                        else if (app.Status == 6)
+                                                                                        {
+                                                                                            <a href="/Student/WeeklyLogs"
+                                                                                               class="btn btn-sm btn-outline-info rounded-pill px-3 me-1">
+                                                                                                <i class="ri-booklet-line me-1"></i> Nhật ký tuần
+                                                                                            </a>
+                                                                                        }
+                                                                                        else
+                                                                                        {
+                                                                                            <span class="text-muted small">Chờ cập nhật</span>
+                                                                                        }
+                                                                                    </td>
+                                                                                </tr>
+                                                                            }
+                                                                        }
+                        else
+                                                                        {
+                                                                            <tr>
+                                                                                <td colspan="6" class="text-center py-5 text-muted">Chưa có đơn ứng tuyển nào.</td>
+                                                                            </tr>
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                    </div>
+                                                </div>
+                                            </div>
